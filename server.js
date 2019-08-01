@@ -1,7 +1,6 @@
 const http = require('http')
 const app = require('./app/app')
+const config = require('./app/config/index')
 
-const PORT = 3000
-
-app.set('port', PORT)
-http.createServer(app).listen(PORT)
+app.set('port', config.port)
+http.createServer(app).listen(config.port)
