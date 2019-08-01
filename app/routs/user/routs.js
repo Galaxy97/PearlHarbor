@@ -1,6 +1,5 @@
 const express = require('express')
-const services = require('./services')
-
+// const services = require('./services')
 const router = express.Router()
 
 router.get('/', (req, res) => {
