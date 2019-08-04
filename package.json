@@ -18,10 +18,20 @@
   },
   "homepage": "https://github.com/Galaxy97/PearlHarbor#readme",
   "dependencies": {
+    "ajv": "^6.10.2",
+    "axios": "^0.19.0",
     "body-parser": "^1.19.0",
+    "crypto": "^1.0.1",
     "express": "^4.17.1",
+<<<<<<< HEAD
     "hbs": "^4.0.4",
     "socket.io": "^2.2.0"
+=======
+    "express-session": "^1.16.2",
+    "hbs": "^4.0.4",
+    "mongoose": "^5.6.7",
+    "uuid": "^3.3.2"
+>>>>>>> d70835089dfd923eb675e91396b5070b01b2290e
   },
   "devDependencies": {
     "nodemon": "^1.19.1",
