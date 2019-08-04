@@ -2,7 +2,7 @@ const express = require('express')
 const validatorBody = require('../../web-validator/validate-middleware-body')
 const userValidatorSchema = require('./validator')
 const services = require('./services')
-// const db = require('../../db/database')
+const db = require('../../db/database')
 // const session = require('express-session')
 
 const router = express.Router()
