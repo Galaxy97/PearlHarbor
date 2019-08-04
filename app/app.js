@@ -8,7 +8,7 @@ const game = require('./routs/game/routs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-//app.use(bodyParser.text())
+// app.use(bodyParser.text())
 
 app.use(session({
   secret: 'dasfasdfasdfasdfsadfadsfadsfasdf',

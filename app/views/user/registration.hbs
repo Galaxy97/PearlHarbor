@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
 </head>
 
 <body>
-     Hello Perl Harbor <br>
-    <input type="text" name="name" id = "name"/> <br>
-    <input type="text" name="password" id = "password"/><br>
-    <input type="text" name="confirmPassword" id="confirm"/><br>
-    <input type="submit" name="confirm" onclick="sendPost()"/>
-    <script>
-      function sendPost() {
-        const name = document.getElementById('name').value
-        const password = document.getElementById('password').value
-        const confirm = document.getElementById('confirm').value
-        const req = new XMLHttpRequest();
-        const url ='http://localhost:3000/signup'
-        req.open('POST', url)
-        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        req.send("name=" + name + "&password=" + password + "&confirmPassword=" + confirm) 
-        //document.getElementById('name').innerHTML = req.responseText
-        }
-    </script>
-   </body>
+  <h1>Registration new user</h1>
+  <hr>
+  <form>
+    <p> Name <input type="text" name="name" id="name"> </p>
+    <p> Password <input type="text" name="password" id="password"></p>
+    <p> Confirm Password <input type="text" name="confirmPassword" id="confirm"></p>
+    <input type="submit" name="confirm" onclick="sendPost()">
+  </form>
+  <script>
+    function sendPost() {
+      const name = document.getElementById('name').value
+      const password = document.getElementById('password').value
+      const confirm = document.getElementById('confirm').value
+      const req = new XMLHttpRequest();
+      const url = 'http://localhost:3000/signup'
+      req.open('POST', url)
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      req.send("name=" + name + "&password=" + password + "&confirmPassword=" + confirm)
+      //document.getElementById('name').innerHTML = req.responseText
+    }
+  </script>
+</body>
+
 </html>
