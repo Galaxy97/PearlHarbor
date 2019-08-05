@@ -37,10 +37,7 @@ const signup = (req, res, next) => {
     wins: 0,
     apiKey: uuidv4(),
     registeredAt: new Date()
-  }).save(function (err) {
-    if (err) return console.log('errr', err)
-    console.log('saved')
-  })
+  }).save()
     .then(() => {
       console.log('create new user')
       res.status(200).send('Successfully registered')

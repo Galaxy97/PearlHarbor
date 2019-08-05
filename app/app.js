@@ -6,6 +6,7 @@ const app = express()
 const RequestError = require('./errors/RequestError')
 const session = require('express-session')
 const game = require('./routs/game/routs')
+require('./db/database')
 
 app.use(bodyParser.json())
 app.use(bodyParser.text())

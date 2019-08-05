@@ -20,37 +20,15 @@
         name: document.getElementById('name').value,
         password: document.getElementById('password').value
       })
+      .then((res) => {
+        debugger
+        alert(res.data)
+        localStorage.setItem('apikey': res.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     }
-        /*const name = document.getElementById('name').value
-    const password = document.getElementById('password').value
-
-    const req = new XMLHttpRequest();
-    const url ='http://localhost:3000/login'
-    req.open('POST', url)
-    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    req.send("name=" + name + "&password=" + password)
-    req.onload = () => {
-      if(req.status === 200){
-        const newreq = new XMLHttpRequest();
-        const url ='http://localhost:3000/game'
-        newreq.open('GET', url)
-        newreq.setRequestHeader("x-api-key", req.response);
-        localStorage.setItem('apiKey', req.response)
-        newreq.send()
-        newreq.onload = () => {
-          if(newreq.status === 200) {
-            location.replace('http://localhost:3000/game/field')
-          }
-        }
-      }
-      else {
-        alert('wrong')
-      }
-    }
-    req.onerror = () => {
-      alert('Wrong')
-    }
-    }*/
   </script>
 </body>
 
