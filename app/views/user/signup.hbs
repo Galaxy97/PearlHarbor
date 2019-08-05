@@ -26,17 +26,23 @@
       <input type="button" name="confirm" onclick="sendPost()" value="confirm">
     </form>
   </div>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
     function sendPost() {
       const name = document.getElementById('name').value
       const password = document.getElementById('password').value
-      const confirm = document.getElementById('confirm').value
-      const req = new XMLHttpRequest();
-      const url = 'http://localhost:3000/signup'
-      req.open('POST', url)
-      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      req.send("name=" + name + "&password=" + password + "&confirmPassword=" + confirm)
-      //document.getElementById('name').innerHTML = req.responseText
+      const confirmPassword = document.getElementById('confirm').value
+      axios.post('/signup', {
+        name, password, confirmPassword
+      })
+        .then(function (response) {
+          document.cookie = "apiKey=" + response.data
+          location.replace('http://localhost:3000/login')
+        })
+        .catch(function (error) {
+          debugger
+          console.log(error);
+        });
     }
   </script>
 </body>
