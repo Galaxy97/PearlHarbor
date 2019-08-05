@@ -39,6 +39,7 @@ const signup = (req, res, next) => {
       res.status(200).send('Successfully registered')
     })
     .catch((err) => {
+      console.log('ok')
       return next(new RequestError(400, err))
     })
 }

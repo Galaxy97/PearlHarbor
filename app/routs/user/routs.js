@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/signup', (req, res, next) => {
-  res.render('user/registration')
+  res.render('user/signup')
 })
 
 router.get('/login', (req, res, next) => {
@@ -26,6 +26,7 @@ router.get('/chat', services.authenticate, (req, res, next) => {
 })
 
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
+  console.log('not ok')
   services.signupFunc(req, res, next)
 })
 
