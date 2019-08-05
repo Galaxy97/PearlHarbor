@@ -3,29 +3,26 @@ const User = require('./models/usermodel')
 const crypto = require('crypto')
 const uuidv4 = require('uuid/v4')
 const config = require('../../config/index')
+const cookie = require('cookie')
 
 const login = (req, res, next) => {
-  console.log('do req')
   User.findOne(
     {
       name: req.body.name,
       password: crypto.createHash('md5', config.hashsecret).update(req.body.password).digest('hex')
     })
     .then((user) => {
-      console.log('uuuuu')
       if (user === null) {
         return next(new RequestError(400, 'Wrong name or password'))
       }
       res.status(200).send(user.apiKey)
     })
     .catch((err) => {
-      console.log('err')
       return next(new RequestError(400, err))
     })
 }
 
 const signup = (req, res, next) => {
-  console.log('in func', req.body)
   if (req.body.password !== req.body.confirmPassword) {
     return next(new RequestError(400, 'Passwords should match'))
   }
@@ -39,16 +36,32 @@ const signup = (req, res, next) => {
     registeredAt: new Date()
   }).save()
     .then(() => {
-      console.log('create new user')
       res.status(200).send('Successfully registered')
     })
     .catch((err) => {
-      console.log('errrror')
       return next(new RequestError(400, err))
+    })
+}
+
+const authenticate = (req, res, next) => {
+  if (!req.headers.cookie) {
+    return next(new RequestError(401, 'User is not logged'))
+  }
+  const apikey = cookie.parse(req.headers.cookie).apiKey
+  User.findOne({ apiKey: apikey },
+    function (err, founduser) {
+      if (err) {
+        return next(new RequestError(400, err))
+      }
+      if (founduser === null) {
+        return next(new RequestError(401, 'User is not logged'))
+      }
+      next()
     })
 }
 
 module.exports = {
   loginFunc: login,
-  signupFunc: signup
+  signupFunc: signup,
+  authenticate: authenticate
 }

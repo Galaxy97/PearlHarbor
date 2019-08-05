@@ -6,17 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <style>
+    div {
+      float: left;
+      width: 30%;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Registration new user</h1>
   <hr>
-  <form>
-    <p> Name <input type="text" name="name" id="name"> </p>
-    <p> Password <input type="text" name="password" id="password"></p>
-    <p> Confirm Password <input type="text" name="confirmPassword" id="confirm"></p>
-    <input type="button" name="confirm" onclick="sendPost()" value="confirm">
-  </form>
+  <div style="">
+    <form>
+      <p> Name <input type="text" name="name" id="name"> </p>
+      <p> Password <input type="text" name="password" id="password"></p>
+      <p> Confirm Password <input type="text" name="confirmPassword" id="confirm"></p>
+      <input type="button" name="confirm" onclick="sendPost()" value="confirm">
+    </form>
+  </div>
   <script>
     function sendPost() {
       const name = document.getElementById('name').value

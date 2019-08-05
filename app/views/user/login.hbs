@@ -13,21 +13,17 @@
   <input type="text" name="name" id="name" /> <br>
   <input type="text" name="password" id="password" /><br>
   <input type="button" value="confirm" onclick="sendPost()" />
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
     function sendPost() {
-      axios.post('/login', {
-        name: document.getElementById('name').value,
-        password: document.getElementById('password').value
-      })
-      .then((res) => {
-        debugger
-        alert(res.data)
-        localStorage.setItem('apikey': res.data)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+      const name = document.getElementById('name').value
+      const password = document.getElementById('password').value
+      const req = new XMLHttpRequest();
+      const url = 'http://localhost:3000/login'
+      req.open('POST', url)
+      req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      req.send("name=" + name + "&password=" + password)
+      document.cookie = "apiKey=" + req.response
+      location.replace('http://localhost:3000/game')
     }
   </script>
 </body>
