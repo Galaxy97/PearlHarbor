@@ -1,4 +1,5 @@
 const express = require('express')
+require('./db/database')
 const bodyParser = require('body-parser')
 const user = require('./routs/user/routs')
 const chat = require('./routs/chat/routs')
@@ -27,9 +28,12 @@ app.use('/chat', chat)
 app.use('/game', game)
 
 app.use(function (err, req, res, next) {
-  if (err instanceof RequestError) {
-    res.status(err.code)
-    res.send(err.message)
+  if (err.code !== 500) {
+    if (err.code === 401) {
+      res.status(err.code).send('Not logged')
+    } else {
+    res.status(err.code).send(err.message)
+    }
   } else {
     console.log(err)
     res.status(500)
