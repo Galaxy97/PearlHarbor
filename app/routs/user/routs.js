@@ -2,6 +2,7 @@ const express = require('express')
 const validatorBody = require('../../web-validator/validate-middleware-body')
 const userValidatorSchema = require('./validator')
 const services = require('./services')
+const gamefield = require('../../utils/randomgamefield').randomize
 // const session = require('express-session')
 
 const router = express.Router()
@@ -19,11 +20,11 @@ router.get('/login', (req, res, next) => {
 })
 
 router.get('/game', services.authenticate, (req, res, next) => {
-  res.render('user/index')
+  gamefield()
+  res.render('game/lobby')
 })
 
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
-  console.log('not ok')
   services.signupFunc(req, res, next)
 })
 
