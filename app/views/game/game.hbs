@@ -7,88 +7,40 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <style>
-    .button {
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
+    #playerInfo {
+      width: 40%;
+      float: left;
+      text-align: center;
+      margin-top: 5%;
     }
 
-    #user {
-      width: 50%;
+    #enemyInfo {
+      width: 40%;
       float: left;
-      margin-top: 20px;
+      text-align: center;
+      margin-top: 5%;
+      margin-left: 10%;
     }
 
-    #enemy {
-      width: 50%;
+    #field {
       float: left;
-      margin-top: 20px;
+      margin-top: 5%;
+      margin-left: 3%;
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>sea battle</h1>
+  <header style="text-align: center">
+    <a href="/"><h1>Some lobby</h1></a>
     <hr>
   </header>
-  <div class="content">
-    <div id="user" align="center">
-      <h2>My ships</h2>
-    </div>
-    <div id="enemy" align="center">
-      <h2>Enemy ships</h2>
-    </div>
-  </div>
+  <div id="playerInfo" align="center"></div>
+  <div id="enemyInfo" align="center"></div>
 
-  <script>
-
-  </script>
-
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>
-
-    renderField(document.getElementById('user'))
-    renderField(document.getElementById('enemy'))
-
-    let field
-    axios.get('/game/field')
-      .then(function (response) {
-        field = response.data
-      })
-      .catch(function (error) {
-        alert(error)
-        console.log(error);
-      })
-
-    function renderField(obj) {
-      const table = document.createElement('table')
-      for (let i = 0; i < 10; i++) {
-        const tr = document.createElement('tr')
-        for (let j = 0; j < 10; j++) {
-          const td = document.createElement('td')
-          td.innerHTML = `<input type="button" class="button" onclick = "checkButton('${i}, ${j} , this)">`
-          tr.appendChild(td)
-        }
-        table.appendChild(tr)
-      }
-      obj.appendChild(table)
-    }
-
-    function checkButton(x, y, obj) {
-      if (field[x][y] === 2) {
-        obj.style.backgroundColor = "red"
-      } else {
-        obj.style.backgroundColor = "green"
-      }
-      obj.attributes.onclick.value = ""
-
-    }
-    function logout() {
-
-    }
-  </script>
-
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/game/scripts/client.main.js"></script>
 </body>
 
 </html>

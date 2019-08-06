@@ -17,6 +17,10 @@ socket.on('letsBattle', () => {
     console.log('start game')
   }, 1500)
 })
+socket.on('infoPlayer2', (data) => {
+  const enemyInfo = document.getElementById('enemyInfo')
+    enemyInfo.innerHTML = renderInfo(data)
+})
 
 function renderInfo(data) {
   return `
