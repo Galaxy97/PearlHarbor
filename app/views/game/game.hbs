@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    Hello Perl Harbor
+    <script>
+        function f(x) {
+            return Math.pow(x, 4) + Math.pow(x, 3) + 2 * x;
+        }
+        let tableObj = document.createElement('table');
+        let tableHTML = '';
+
+        for (let i = 0; i < 10; i++) {
+            tableHTML += '<tr>'
+            for(let j = 0; j < 10; j++)
+            tableHTML += '<td>' + '<input type="button" idx=" ' + i + '" idy="' + j + '" onclick = "checkButton('+ i + ',' + j + ', this)" />' + '</td>';
+            tableHTML += '</tr>'
+        }
+        tableObj.innerHTML = tableHTML;
+        document.body.appendChild(tableObj);
+        req = XMLHttpRequest
+    </script>
+    <input type="button" value="confirm" onclick = "logout()"/>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    let field 
+    axios.get('/game/field')
+        .then(function (response) {
+          field = response.data
+        })
+        .catch(function (error) {
+          alert(error)
+          console.log(error);
+        })
+    function checkButton(x, y, obj) {
+        if (field[x][y] === 2) {
+          obj.style.backgroundColor = "red"
+        } else {
+          obj.style.backgroundColor = "green"
+        }
+        obj.attributes.onclick.value = ""
+        
+    }
+    function logout() {
+      
+    }
+  </script>
+
+</body>
+
+</html>
