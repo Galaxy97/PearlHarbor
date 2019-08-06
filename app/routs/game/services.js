@@ -1,9 +1,13 @@
 const User = require('../user/models/usermodel')
 const RequestError = require('../../errors//RequestError')
+const cookie = require('cookie')
 
-function authenticate (req, res, next) {
-  const params = req.headers['x-api-key']
-  User.findOne({ apiKey: params },
+const authenticate = (req, res, next) => {
+  if (!req.headers.cookie) {
+    return next(new RequestError(401, 'User is not logged'))
+  }
+  const apikey = cookie.parse(req.headers.cookie).apiKey
+  User.findOne({ apiKey: apikey },
     function (err, founduser) {
       if (err) {
         return next(new RequestError(400, err))
@@ -11,7 +15,6 @@ function authenticate (req, res, next) {
       if (founduser === null) {
         return next(new RequestError(401, 'User is not logged'))
       }
-      req.user = founduser
       next()
     })
 }

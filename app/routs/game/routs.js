@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const authenticate = require('./services').authenticate
+const services = require('./services')
+const generateField = require('../../utils/randomgamefield').randomize
 
-router.get('/', authenticate, (req, res) => {
-  res.status(200).send()
+router.get('/', services.authenticate, (req, res, next) => {
+  res.render('game/game')
 })
 
-router.get('/field', (req, res) => {
-  res.render('game/lobby')
+router.get('/field', (req, res, next) => {
+  res.status(200).send(generateField())
 })
 
 module.exports = router

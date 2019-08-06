@@ -19,11 +19,6 @@ router.get('/login', (req, res, next) => {
   res.render('user/login')
 })
 
-router.get('/game', services.authenticate, (req, res, next) => {
-  gamefield()
-  res.render('game/lobby')
-})
-
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
   services.signupFunc(req, res, next)
 })
@@ -31,5 +26,7 @@ router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, nex
 router.post('/login', validatorBody(userValidatorSchema.login), (req, res, next) => {
   services.loginFunc(req, res, next)
 })
+
+router.get('/logout', validatorBody(userValidatorSchema.login))
 
 module.exports = router
