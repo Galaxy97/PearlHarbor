@@ -19,13 +19,10 @@ router.get('/login', (req, res, next) => {
   res.render('user/login')
 })
 
-<<<<<<< HEAD
 router.get('/', services.authenticate, (req, res, next) => {
   res.render('user/index', { path: '/game/lobby' })
 })
 
-=======
->>>>>>> ab74fb97451808bb6925912c90a39e73edd39024
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
   services.signupFunc(req, res, next)
 })
