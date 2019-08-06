@@ -1,7 +1,10 @@
 const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
+const generateField = require('./randomgamefield').randomize
+const checkHit = require('./randomgamefield').checkHit
 
 const roomEneny = []
+const fields = {}
 
 module.exports = (io) => {
   io.sockets.on('connection', function (socket) {
@@ -25,10 +28,13 @@ module.exports = (io) => {
       let roomId
       console.log('room', roomId)
       if (roomEneny.length) {
+        InitializeFields()
+        checkHit(1, 1, fields.player1, fields.player2)
         roomId = roomEneny[0] // next wiil be random
         roomEneny.pop()
         socket.join(roomId)
         io.to(roomId).emit('letsBattle')
+        var room = io.sockets.adapter.rooms[roomId].sockets
       } else {
         roomId = uuidv4()
         roomEneny.push(roomId)
@@ -40,4 +46,9 @@ module.exports = (io) => {
       console.log('Unconnection <--')
     })
   })
+}
+
+function InitializeFields () {
+  fields.player1 = generateField()
+  fields.player2 = generateField()
 }
