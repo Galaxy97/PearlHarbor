@@ -16,6 +16,11 @@
   "bugs": {
     "url": "https://github.com/Galaxy97/PearlHarbor/issues"
   },
+  "standard": {
+    "ignore": [
+      "/app/public"
+    ]
+  },
   "homepage": "https://github.com/Galaxy97/PearlHarbor#readme",
   "dependencies": {
     "ajv": "^6.10.2",

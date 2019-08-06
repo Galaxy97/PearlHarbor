@@ -8,10 +8,18 @@
   <title>Document</title>
   <style>
     #playerInfo {
-      width: 30%;
+      width: 40%;
       float: left;
       text-align: center;
       margin-top: 5%;
+    }
+
+    #enemyInfo {
+      width: 40%;
+      float: left;
+      text-align: center;
+      margin-top: 5%;
+      margin-left: 10%;
     }
 
     #field {
@@ -24,34 +32,15 @@
 
 <body>
   <header style="text-align: center">
-    <h1>Some lobby</h1>
+    <a href="/"><h1>Some lobby</h1></a>
     <hr>
   </header>
-  <div id="playerInfo"></div>
-  <div id="field">
-    some
-  </div>
+  <div id="playerInfo" align="center"></div>
+  <div id="enemyInfo" align="center"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io('http://localhost:3000')
-    socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
-
-    socket.on('messeage', (data) => {
-      const divInfo = document.getElementById('playerInfo')
-      divInfo.innerHTML = `
-                <p> User name : <strong>${data.name}</strong> </p>
-                <p> Sessions played : <strong>${data.sessions}</strong> </p>
-                <p> Wins : <strong>${data.wins}</strong> </p>
-                <p> Last played : <strong>${new Date(data.lastPlayDate).toLocaleString()}</strong> </p>
-            `
-    })
-    socket.on('letsBattle', () => {
-      setTimeout(() => {
-        location.replace('http://localhost:3000/game')
-      }, 1500)
-    })
-  </script>
+  <script src="/game/scripts/client.main.js"></script>
 </body>
 
 </html>
