@@ -28,7 +28,7 @@ module.exports = (io) => {
         roomId = roomEneny[0] // next wiil be random
         roomEneny.pop()
         socket.join(roomId)
-        io.to(roomId).emit('hello')
+        io.to(roomId).emit('letsBattle')
       } else {
         roomId = uuidv4()
         roomEneny.push(roomId)

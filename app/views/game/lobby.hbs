@@ -46,15 +46,11 @@
                 <p> Last played : <strong>${new Date(data.lastPlayDate).toLocaleString()}</strong> </p>
             `
     })
-    socket.on('hello', () => {
-      console.log('please wait enemy')
+    socket.on('letsBattle', () => {
+      setTimeout(() => {
+        location.replace('http://localhost:3000/game/battle')
+      }, 1500)
     })
-
-    socket.on('play', () => {
-      alert('startgame redirect')
-      location.replace('http://localhost:3000/game/battle')
-    })
-
   </script>
 </body>
 
