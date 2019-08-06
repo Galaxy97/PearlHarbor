@@ -6,9 +6,9 @@ const services = require('./services')
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
-  res.render('user/index')
-})
+// router.get('/', (req, res) => {
+//   res.render('user/index', { path: '/game' })
+// })
 
 router.get('/signup', (req, res, next) => {
   res.render('user/signup')
@@ -18,11 +18,8 @@ router.get('/login', (req, res, next) => {
   res.render('user/login')
 })
 
-router.get('/game', services.authenticate, (req, res, next) => {
-  res.render('user/index')
-})
-router.get('/chat', services.authenticate, (req, res, next) => {
-  res.render('chat/chat')
+router.get('/', services.authenticate, (req, res, next) => {
+  res.render('user/index', { path: '/game/lobby' })
 })
 
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {

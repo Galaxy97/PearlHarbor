@@ -13,7 +13,9 @@
   <input type="text" name="name" id="name" /> <br>
   <input type="text" name="password" id="password" /><br>
   <input type="button" value="confirm" onclick="sendPost()" />
+  <a href="/signup"><input type="button" value="signup?" /></a>
 
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
     function sendPost() {
@@ -24,17 +26,12 @@
         name, password
       })
         .then(function (response) {
-          document.cookie = "apiKey=" + response.data
-          location.replace('http://localhost:3000/game')
+          Cookies.set('apiKey', response.data)
+          location.replace('http://localhost:3000/game/lobby')
         })
         .catch(function (error) {
-          console.log(error);
-        });
-
-
-
-
-
+          alert('sorry pass or login is wrong', error)
+        })
     }
   </script>
 </body>

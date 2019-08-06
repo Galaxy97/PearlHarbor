@@ -4,4 +4,5 @@ class RequestError extends Error {
     this.code = code
   }
 }
+
 module.exports = RequestError

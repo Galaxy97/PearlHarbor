@@ -2,9 +2,8 @@ const express = require('express')
 require('./db/database')
 const bodyParser = require('body-parser')
 const user = require('./routs/user/routs')
-const chat = require('./routs/chat/routs')
 const app = express()
-const RequestError = require('./errors/RequestError')
+// const RequestError = require('./errors/RequestError')
 const session = require('express-session')
 const game = require('./routs/game/routs')
 require('./db/database')
@@ -22,18 +21,18 @@ app.use(session({
 
 app.set('views', './app/views')
 app.set('view engine', 'hbs')
+app.use(express.static('./app/public'))
 
 app.use('/', user)
-app.use('/chat', chat)
-
 app.use('/game', game)
 
 app.use(function (err, req, res, next) {
   if (err.code !== 500) {
     if (err.code === 401) {
-      res.status(err.code).send('Not logged')
+      // res.status(err.code).send('Not logged')
+      res.redirect('/login')
     } else {
-    res.status(err.code).send(err.message)
+      res.status(err.code).send(err.message)
     }
   } else {
     console.log(err)

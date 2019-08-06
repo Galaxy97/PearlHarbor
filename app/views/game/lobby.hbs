@@ -1,12 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #playerInfo {
+      width: 30%;
+      float: left;
+      text-align: center;
+      margin-top: 5%;
+    }
+
+    #field {
+      float: left;
+      margin-top: 5%;
+      margin-left: 3%;
+    }
+  </style>
 </head>
+
 <body>
-    Hello Perl Harbor
+  <header style="text-align: center">
+    <h1>Some lobby</h1>
+    <hr>
+  </header>
+  <div id="playerInfo"></div>
+  <div id="field">
+    some
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io('http://localhost:3000')
+    socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
+
+    socket.on('messeage', (data) => {
+      const divInfo = document.getElementById('playerInfo')
+      divInfo.innerHTML = `
+                <p> User name : <strong>${data.name}</strong> </p>
+                <p> Sessions played : <strong>${data.sessions}</strong> </p>
+                <p> Wins : <strong>${data.wins}</strong> </p>
+                <p> Last played : <strong>${new Date(data.lastPlayDate).toLocaleString()}</strong> </p>
+            `
+    })
+    socket.on('hello', () => {
+      console.log('please wait enemy')
+    })
+
+    socket.on('play', () => {
+      alert('startgame redirect')
+      location.replace('http://localhost:3000/game/battle')
+    })
+
+  </script>
 </body>
+
 </html>

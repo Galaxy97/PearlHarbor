@@ -5,4 +5,6 @@ const config = require('./app/config/index')
 require('./app/utils/socket')(io)
 
 app.set('port', config.port)
-server.listen(config.port)
+server.listen(config.port, 'localhost', () => {
+  console.log(`Server running at localhost`)
+})

@@ -1,5 +1,5 @@
 const User = require('../user/models/usermodel')
-const RequestError = require('../../errors//RequestError')
+const RequestError = require('../../errors/RequestError')
 
 function authenticate (req, res, next) {
   const params = req.headers['x-api-key']

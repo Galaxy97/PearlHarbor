@@ -24,11 +24,9 @@ const user = mongoose.Schema({
   apiKey: {
     type: String,
     require: true
-  },
-  registeredAt: {
-    type: Date,
-    require: true
   }
+}, {
+  timestamps: { createdAt: 'createdAt' }
 })
 
 var User = mongoose.model('User', user)
