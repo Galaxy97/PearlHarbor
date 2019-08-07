@@ -43,7 +43,6 @@ module.exports = (io) => {
           let roomId
           if (roomEnemy.roomId !== null) {
             roomId = roomEnemy.roomId // next wiil be random
-            roomEnemy.roomId = null
             socket.join(roomId)
             battle(io, roomId, socket)
           } else {
@@ -66,6 +65,7 @@ module.exports = (io) => {
         console.log('player 1 your shot')
         if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)) {
           gameStats.turn = false
+          checkFinish(io)
         }
         socket.emit('shotResult', gameStats.player1.enemyField)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
@@ -76,11 +76,9 @@ module.exports = (io) => {
         }
         socket.emit('shotResult', gameStats.player2.enemyField)
         socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix)
+        checkFinish(io)
       } else {
         console.log('unknown player ERRRRROOOORR')
-      }
-      if (finishGame(gameStats.player1, gameStats.player2)) {
-        console.log('FINISH GG WP')
       }
     })
 
@@ -107,10 +105,18 @@ function battle (io, roomId, socket) {
   if (roomEnemy.player2 !== undefined) {
     const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
     socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)
-    roomEnemy.player1 = undefined
-    roomEnemy.player2 = undefined
     gameStats.player1 = generateField(arr[0])
     gameStats.player2 = generateField(arr[1])
   }
   io.to(roomId).emit('letsBattle')
+}
+
+function checkFinish (io) {
+  if (finishGame(gameStats.player1, gameStats.player2)) {
+    console.log('FINISH GG WP')
+    io.to(roomEnemy.roomId).emit('gameOver')
+    roomEnemy.roomId = null
+    roomEnemy.player1 = undefined
+    roomEnemy.player2 = undefined
+  }
 }

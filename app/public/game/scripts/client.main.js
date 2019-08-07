@@ -65,7 +65,6 @@ function renderGamePage() {
 }
 
 function checkButton(x, y, object) {
-  debugger
   object.onclick = null
   socket.emit('shot', {
     idX: x,
@@ -75,6 +74,10 @@ function checkButton(x, y, object) {
 socket.on('shotResult', (data) => {
   document.getElementById('enemy').innerHTML = ''
   renderEnemyField(document.getElementById('enemy'), data)
+})
+
+socket.on('gameOver', () => {
+  alert('GG Someone won')
 })
 
 function renderDefaultField(obj) {
