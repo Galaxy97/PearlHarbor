@@ -65,8 +65,6 @@ function renderGamePage() {
 }
 
 function checkButton(x, y, object) {
-  debugger
-  object.onclick = null
   socket.emit('shot', {
     idX: x,
     idY: y
@@ -83,7 +81,7 @@ function renderDefaultField(obj) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {
       const td = document.createElement('td')
-      td.innerHTML = `<input type="button" class="btnEmpty" onclick = "checkButton(${i}, ${j}, this)">`
+      td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, this)"></div>`
       tr.appendChild(td)
     }
     table.appendChild(tr)
