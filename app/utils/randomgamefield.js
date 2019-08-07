@@ -1,4 +1,4 @@
-function getRandomInt (max) {
+function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max))
 }
 
@@ -14,6 +14,15 @@ const randomize = () => {
     }
     resultMatrix[i] = temp
   }
+  const emptyField = []
+  for (let i = 0; i < 10; i++) {
+    const temp = []
+    for (let j = 0; j < 10; j++) {
+      temp[j] = 0
+    }
+    emptyField[i] = temp
+  }
+
   for (let shipIndex = 0; shipIndex < ships.length; shipIndex++) {
     let maxHeight = 9
     let maxWidth = 9
@@ -76,7 +85,7 @@ const randomize = () => {
     matrix: resultMatrix,
     ships: resultShips,
     shipsStatus: new Array(ships.length).fill(false),
-    enemyField: new Array(10).fill(new Array(10).fill(0))
+    enemyField: emptyField
   }
   return result
 }
@@ -98,23 +107,44 @@ const checkHit = (x, y, player1, player2) => {
     player2.matrix[x][y] = 1
     console.log('submitted')
   }
+  let string = ''
+  for (let i = 0; i < 10; i++) {
+    let str = ''
+    for (let j = 0; j < 10; j++) {
+      str += (player1.enemyField[i][j]) + ' '
+    }
+    string += (str + '\n')
+  }
+  console.log('\n\n' + string)
+  string = ''
+  for (let i = 0; i < 10; i++) {
+    let str = ''
+    for (let j = 0; j < 10; j++) {
+      str += (player2.matrix[i][j]) + ' '
+    }
+    string += (str + '\n')
+  }
+  console.log('\n\n' + string)
 }
 
 function findShipIndex (x, y, player) {
   for (let i = 0; i < player.ships.length; i++) {
-    if (player.ships[i].includes([x, y, false])) {
-      player.ships[i] = [x, y, true]
-      return i
+    for (let j = 0; j < player.ships[i].length; j++) {
+      if (player.ships[i][j][0] === x && player.ships[i][j][1] === y) {
+        player.ships[i][j][2] = true
+        return i
+      }
     }
   }
 }
 
-function isSink (player, i) {
-  for (let i = 0; i < player.ships.length; i++) {
-    if (player.ships[i][2] === false) {
+function isSink (player, index) {
+  for (let i = 0; i < player.ships[index].length; i++) {
+    if (player.ships[index][i][2] === false) {
       return false
     }
   }
+  player.shipsStatus[index] = true
   return true
 }
 

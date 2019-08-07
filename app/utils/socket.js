@@ -7,6 +7,12 @@ const roomEnemy = {
   roomId: null
 }
 
+const gameStats = {
+  turn: false,
+  player1: {},
+  player2: {}
+}
+
 module.exports = (io) => {
   io.sockets.on('connection', function (socket) {
     socket.on('authentication', (data) => {
@@ -63,6 +69,11 @@ function battle(io, roomId, socket) {
     socket.broadcast.to(player1).emit('infoPlayer2', roomEnemy.player2)
     roomEnemy.player1 = undefined
     roomEnemy.player2 = undefined
+    gameStats.player1 = generateField()
+    gameStats.player2 = generateField()
+    const x = 0
+    const y = 0
+    checkHit(x, y, gameStats.player1, gameStats.player2)
   }
   io.to(roomId).emit('letsBattle')
 }

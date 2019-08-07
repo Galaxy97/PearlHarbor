@@ -69,12 +69,10 @@ axios.get('/game/field')
   })
 
 function checkButton(x, y, obj) {
-  if (field[x][y] === 2) {
-    obj.style.backgroundColor = "red"
-  } else {
-    obj.style.backgroundColor = "green"
-  }
-  obj.attributes.onclick.value = ""
+  socket.on('checkhit', (data) => {
+    const enemyInfo = document.getElementById('enemyInfo')
+    enemyInfo.innerHTML = renderInfo(data)
+  })
 }
 
 
