@@ -2,6 +2,7 @@ const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
 const generateField = require('./randomgamefield').randomize
 const checkHit = require('./randomgamefield').checkHit
+const finishGame = require('./randomgamefield').finishGame
 
 const roomEnemy = {
   roomId: null
@@ -10,7 +11,8 @@ const roomEnemy = {
 const gameStats = {
   turn: false,
   player1: {},
-  player2: {}
+  player2: {},
+  isContinue: true
 }
 
 module.exports = (io) => {
@@ -57,18 +59,28 @@ module.exports = (io) => {
 
     socket.on('shot', (data) => {
       console.log('shot to', data.idX, data.idY)
-      if (socket.id === gameStats.player1.id) {
+      if (gameStats.isContinue === false) {
+        console.log('FINISH GG WP')
+      }
+      if (socket.id === gameStats.player1.id && gameStats.turn === true) {
         console.log('player 1 your shot')
-        checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)
+        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)) {
+          gameStats.turn = false
+        }
         socket.emit('shotResult', gameStats.player1.enemyField)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
-      } else if (socket.id === gameStats.player2.id) {
+      } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
         console.log('player 2 your shot')
-        checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)
+        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)) {
+          gameStats.turn = true
+        }
         socket.emit('shotResult', gameStats.player2.enemyField)
         socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix)
       } else {
         console.log('unknown player ERRRRROOOORR')
+      }
+      if (finishGame(gameStats.player1, gameStats.player2)) {
+        console.log('FINISH GG WP')
       }
     })
 
@@ -91,7 +103,7 @@ module.exports = (io) => {
   })
 }
 
-function battle(io, roomId, socket) {
+function battle (io, roomId, socket) {
   if (roomEnemy.player2 !== undefined) {
     const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
     socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)

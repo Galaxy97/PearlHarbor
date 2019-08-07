@@ -22,7 +22,7 @@ socket.on('letsBattle', () => {
 
 socket.on('getUserField', (arr) => {
   document.getElementById('user').innerHTML = ''
-  renderField(document.getElementById('user'), arr)
+  renderUserField(document.getElementById('user'), arr)
 })
 
 socket.on('infoPlayer2', (data) => {
@@ -65,15 +65,16 @@ function renderGamePage() {
 }
 
 function checkButton(x, y, object) {
+  debugger
+  object.onclick = null
   socket.emit('shot', {
     idX: x,
     idY: y
   })
 }
 socket.on('shotResult', (data) => {
-  debugger
   document.getElementById('enemy').innerHTML = ''
-  renderField(document.getElementById('enemy'), data)
+  renderEnemyField(document.getElementById('enemy'), data)
 })
 
 function renderDefaultField(obj) {
@@ -90,7 +91,7 @@ function renderDefaultField(obj) {
   obj.appendChild(table)
 }
 
-function renderField(obj, arr) {
+function renderUserField(obj, arr) {
   const table = document.createElement('table')
   for (let i = 0; i < 10; i++) {
     const tr = document.createElement('tr')
@@ -110,7 +111,36 @@ function renderField(obj, arr) {
         classbtn = 'btnKill'
       }
 
-      td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+      td.innerHTML = `<input type="button" class="${classbtn}">`
+      tr.appendChild(td)
+    }
+    table.appendChild(tr)
+  }
+  obj.appendChild(table)
+}
+
+function renderEnemyField(obj, arr) {
+  const table = document.createElement('table')
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr')
+    for (let j = 0; j < 10; j++) {
+      const td = document.createElement('td')
+      let classbtn
+      if(arr[i][j] === 0) {
+        classbtn = 'btnEmpty'
+      }
+      if(arr[i][j] === 1) {
+        classbtn = 'btnLosser'
+      }
+      if(arr[i][j] === 2) {
+        classbtn = 'btnKill'
+      }
+
+      if(arr[i][j] === 1 || arr[i][j] === 2) {
+        td.innerHTML = `<input type="button" class="${classbtn}">`
+      } else {
+        td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+      }
       tr.appendChild(td)
     }
     table.appendChild(tr)
