@@ -7,9 +7,9 @@ router.get('/', services.authenticate, (req, res, next) => { // locallost/game
   res.render('game/game')
 })
 
-router.get('/lobby', (req, res) => {
-  res.render('game/lobby')
-})
+// router.get('/game', (req, res) => {
+//   res.render('game/game')
+// })
 
 router.get('/field', (req, res, next) => {
   res.status(200).send(generateField())

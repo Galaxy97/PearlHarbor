@@ -2,7 +2,6 @@ const socket = io('http://localhost:3000')
 socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
 
 socket.on('messeage', (data) => {
-  debugger
   const playerInfo = document.getElementById('playerInfo')
   if (data.hasOwnProperty('player2')) {
     const enemyInfo = document.getElementById('enemyInfo')
@@ -14,8 +13,14 @@ socket.on('messeage', (data) => {
 })
 socket.on('letsBattle', () => {
   setTimeout(() => {
-    console.log('start game')
+    alert('start game')
+    cleanAll()
+    renderGamePage()
   }, 1500)
+})
+socket.on('infoPlayer2', (data) => {
+  const enemyInfo = document.getElementById('enemyInfo')
+  enemyInfo.innerHTML = renderInfo(data)
 })
 
 function renderInfo(data) {
@@ -25,4 +30,65 @@ function renderInfo(data) {
   <p> Wins : <strong>${data.wins}</strong> </p>
   <p> Last played : <strong>${new Date(data.lastPlayDate).toLocaleString()}</strong> </p>
 `
+}
+
+function cleanAll() {
+  document.getElementById('content').innerHTML = null
+}
+
+function renderGamePage() {
+  const divContent = document.getElementById('content')
+  const header = document.createElement('header')
+  header.innerHTML = '<h1> Sea Battle </h1> <hr>'
+  header.style.textAlign = 'center'
+  divContent.appendChild(header)
+
+  const divUser = document.createElement('div')
+  divUser.id = 'user'
+  divUser.align = 'center'
+  divUser.innerHTML = '<h2>My field</h2>'
+  const divEnemy = document.createElement('div')
+  divEnemy.id = 'enemy'
+  divEnemy.align = 'center'
+  divEnemy.innerHTML = '<h2>Enemy field</h2>'
+  divContent.appendChild(divUser)
+  divContent.appendChild(divEnemy)
+
+  renderField(document.getElementById('user'))
+  renderField(document.getElementById('enemy'))
+}
+
+let field
+axios.get('/game/field')
+  .then(function (response) {
+    field = response.data
+  })
+  .catch(function (error) {
+    alert(error)
+    console.log(error);
+  })
+
+function checkButton(x, y, obj) {
+  if (field[x][y] === 2) {
+    obj.style.backgroundColor = "red"
+  } else {
+    obj.style.backgroundColor = "green"
+  }
+  obj.attributes.onclick.value = ""
+}
+
+
+
+function renderField(obj) {
+  const table = document.createElement('table')
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr')
+    for (let j = 0; j < 10; j++) {
+      const td = document.createElement('td')
+      td.innerHTML = `<input type="button" class="button" onclick = "checkButton(${i}, ${j}, this)">`
+      tr.appendChild(td)
+    }
+    table.appendChild(tr)
+  }
+  obj.appendChild(table)
 }

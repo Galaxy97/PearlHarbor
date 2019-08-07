@@ -3,7 +3,7 @@ const uuidv4 = require('uuid/v4')
 const generateField = require('./randomgamefield').randomize
 const checkHit = require('./randomgamefield').checkHit
 
-let roomEnemy = {
+const roomEnemy = {
   roomId: null
 }
 
@@ -32,25 +32,21 @@ module.exports = (io) => {
             }
           }
           socket.emit('messeage', roomEnemy)
-          if (roomEnemy.player2 !== undefined) {
-            roomEnemy.player1 = undefined
-            roomEnemy.player2 = undefined
+          let roomId
+          if (roomEnemy.roomId !== null) {
+            roomId = roomEnemy.roomId // next wiil be random
+            roomEnemy.roomId = null
+            socket.join(roomId)
+            battle(io, roomId, socket)
+          } else {
+            roomId = uuidv4()
+            roomEnemy.roomId = roomId
+            socket.join(roomId)
           }
         })
         .catch((e) => {
           console.log(e)
         })
-      let roomId
-      if (roomEnemy.roomId !== null) {
-        roomId = roomEnemy.roomId // next wiil be random
-        roomEnemy.roomId = null
-        socket.join(roomId)
-        battle(io, roomId, socket)
-      } else {
-        roomId = uuidv4()
-        roomEnemy.roomId = roomId
-        socket.join(roomId)
-      }
     })
     console.log('successful connection to socket')
     socket.on('disconnect', function () {
@@ -60,9 +56,13 @@ module.exports = (io) => {
 }
 
 function battle(io, roomId, socket) {
-  // const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  // const player1 = arr[0]
+  const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
+  const player1 = arr[0]
   // const player2 = arr[1]
-  // socket.broadcast.to(player1).emit('hello', 'for your eyes only')
+  if (roomEnemy.player2 !== undefined) {
+    socket.broadcast.to(player1).emit('infoPlayer2', roomEnemy.player2)
+    roomEnemy.player1 = undefined
+    roomEnemy.player2 = undefined
+  }
   io.to(roomId).emit('letsBattle')
 }

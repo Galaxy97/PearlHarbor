@@ -20,7 +20,7 @@ router.get('/login', (req, res, next) => {
 })
 
 router.get('/', services.authenticate, (req, res, next) => {
-  res.render('user/index', { path: '/game/lobby' })
+  res.render('user/index', { path: '/game' })
 })
 
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
