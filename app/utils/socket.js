@@ -60,11 +60,27 @@ module.exports = (io) => {
       if (socket.id === gameStats.player1.id) {
         console.log('player 1 your shot')
         checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)
+        socket.emit('shotResult', gameStats.player1.enemyField)
+        socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
       } else if (socket.id === gameStats.player2.id) {
         console.log('player 2 your shot')
         checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)
+        socket.emit('shotResult', gameStats.player2.enemyField)
+        socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix)
       } else {
         console.log('unknown player ERRRRROOOORR')
+      }
+    })
+
+    socket.on('getMyFileld', () => {
+      if (socket.id === gameStats.player1.id) {
+        console.log('player 1 your shot')
+        socket.emit('getUserField', gameStats.player1.matrix)
+      } else if (socket.id === gameStats.player2.id) {
+        console.log('player 2 your shot')
+        socket.emit('getUserField', gameStats.player2.matrix)
+      } else {
+        console.log('unknown USER FIELD player ERRRRROOOORR')
       }
     })
 
@@ -75,7 +91,7 @@ module.exports = (io) => {
   })
 }
 
-function battle (io, roomId, socket) {
+function battle(io, roomId, socket) {
   if (roomEnemy.player2 !== undefined) {
     const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
     socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)

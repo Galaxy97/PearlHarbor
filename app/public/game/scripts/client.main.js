@@ -16,7 +16,13 @@ socket.on('letsBattle', () => {
     alert('start game')
     cleanAll()
     renderGamePage()
+    socket.emit('getMyFileld')
   }, 1500)
+})
+
+socket.on('getUserField', (arr) => {
+  document.getElementById('user').innerHTML = ''
+  renderField(document.getElementById('user'), arr)
 })
 
 socket.on('infoPlayer2', (data) => {
@@ -34,7 +40,7 @@ function renderInfo(data) {
 }
 
 function cleanAll() {
-  document.getElementById('content').innerHTML = null
+  document.getElementById('content').innerHTML = ''
 }
 
 function renderGamePage() {
@@ -55,31 +61,59 @@ function renderGamePage() {
   divContent.appendChild(divUser)
   divContent.appendChild(divEnemy)
 
-  renderField(document.getElementById('user'))
-  renderField(document.getElementById('enemy'))
+  renderDefaultField(document.getElementById('enemy'))
 }
 
 function checkButton(x, y, object) {
-  debugger
   socket.emit('shot', {
     idX: x,
     idY: y
   })
 }
-  socket.on('shotResult', (data) => {
+socket.on('shotResult', (data) => {
+  debugger
+  document.getElementById('enemy').innerHTML = ''
+  renderField(document.getElementById('enemy'), data)
+})
 
-  })
-
-  function renderField(obj) {
-    const table = document.createElement('table')
-    for (let i = 0; i < 10; i++) {
-      const tr = document.createElement('tr')
-      for (let j = 0; j < 10; j++) {
-        const td = document.createElement('td')
-        td.innerHTML = `<input type="button" class="btnLosser" onclick = "checkButton(${i}, ${j}, this)">`
-        tr.appendChild(td)
-      }
-      table.appendChild(tr)
+function renderDefaultField(obj) {
+  const table = document.createElement('table')
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr')
+    for (let j = 0; j < 10; j++) {
+      const td = document.createElement('td')
+      td.innerHTML = `<input type="button" class="btnEmpty" onclick = "checkButton(${i}, ${j}, this)">`
+      tr.appendChild(td)
     }
-    obj.appendChild(table)
+    table.appendChild(tr)
   }
+  obj.appendChild(table)
+}
+
+function renderField(obj, arr) {
+  const table = document.createElement('table')
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr')
+    for (let j = 0; j < 10; j++) {
+      const td = document.createElement('td')
+      let classbtn
+      if(arr[i][j] === 0) {
+        classbtn = 'btnEmpty'
+      }
+      if(arr[i][j] === 1) {
+        classbtn = 'btnLosser'
+      }
+      if(arr[i][j] === 2) {
+        classbtn = 'btnChunkShip'
+      }
+      if(arr[i][j] === 3) {
+        classbtn = 'btnKill'
+      }
+
+      td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+      tr.appendChild(td)
+    }
+    table.appendChild(tr)
+  }
+  obj.appendChild(table)
+}
