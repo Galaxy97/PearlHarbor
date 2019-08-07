@@ -18,6 +18,7 @@ socket.on('letsBattle', () => {
     renderGamePage()
   }, 1500)
 })
+
 socket.on('infoPlayer2', (data) => {
   const enemyInfo = document.getElementById('enemyInfo')
   enemyInfo.innerHTML = renderInfo(data)
@@ -58,26 +59,17 @@ function renderGamePage() {
   renderField(document.getElementById('enemy'))
 }
 
-let field
-axios.get('/game/field')
-  .then(function (response) {
-    field = response.data
+function checkButton(x, y, object) {
+  debugger
+  socket.emit('shot', {
+    idX: x,
+    idY: y
   })
-  .catch(function (error) {
-    alert(error)
-    console.log(error);
-  })
-
-function checkButton(x, y, obj) {
-  if (field[x][y] === 2) {
-    obj.style.backgroundColor = "red"
-  } else {
-    obj.style.backgroundColor = "green"
-  }
-  obj.attributes.onclick.value = ""
 }
 
+socket.on('shotResult', (data) => {
 
+})
 
 function renderField(obj) {
   const table = document.createElement('table')
@@ -85,7 +77,7 @@ function renderField(obj) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {
       const td = document.createElement('td')
-      td.innerHTML = `<input type="button" class="button" onclick = "checkButton(${i}, ${j}, this)">`
+      td.innerHTML = `<input type="button" class="btnLosser" onclick = "checkButton(${i}, ${j}, this)">`
       tr.appendChild(td)
     }
     table.appendChild(tr)

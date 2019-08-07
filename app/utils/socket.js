@@ -5,6 +5,12 @@ const roomEnemy = {
   roomId: null
 }
 
+const gameStats = {
+  turn: false,
+  player1: {},
+  player2: {}
+}
+
 module.exports = (io) => {
   io.sockets.on('connection', function (socket) {
     socket.on('authentication', (data) => {
@@ -46,6 +52,19 @@ module.exports = (io) => {
           console.log(e)
         })
     })
+
+    socket.on('shot', (data) => {
+      let player
+      console.log('shot to', data.idX, data.idY)
+      if (socket.id === gameStats.player1.id) {
+        console.log('player 1 your shot')
+      } else if (socket.id === gameStats.player2.id) {
+        console.log('player 2 your shot')
+      } else {
+        console.log('unknown player ERRRRROOOORR')
+      }
+    })
+
     console.log('successful connection to socket')
     socket.on('disconnect', function () {
       console.log('Unconnection <--')
@@ -54,11 +73,11 @@ module.exports = (io) => {
 }
 
 function battle(io, roomId, socket) {
-  const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  const player1 = arr[0]
-  // const player2 = arr[1]
   if (roomEnemy.player2 !== undefined) {
-    socket.broadcast.to(player1).emit('infoPlayer2', roomEnemy.player2)
+    const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
+    gameStats.player1.id = arr[0]
+    gameStats.player2.id = arr[1]
+    socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)
     roomEnemy.player1 = undefined
     roomEnemy.player2 = undefined
   }
