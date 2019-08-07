@@ -1,5 +1,7 @@
 const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
+const generateField = require('./randomgamefield').randomize
+const checkHit = require('./randomgamefield').checkHit
 
 const roomEnemy = {
   roomId: null
@@ -80,6 +82,11 @@ function battle(io, roomId, socket) {
     socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)
     roomEnemy.player1 = undefined
     roomEnemy.player2 = undefined
+    gameStats.player1 = generateField()
+    gameStats.player2 = generateField()
+    const x = 0
+    const y = 0
+    checkHit(x, y, gameStats.player1, gameStats.player2)
   }
   io.to(roomId).emit('letsBattle')
 }

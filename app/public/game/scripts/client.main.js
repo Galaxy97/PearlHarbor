@@ -65,7 +65,6 @@ function checkButton(x, y, object) {
     idX: x,
     idY: y
   })
-}
 
 socket.on('shotResult', (data) => {
 

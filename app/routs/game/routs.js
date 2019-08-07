@@ -12,7 +12,6 @@ router.get('/', services.authenticate, (req, res, next) => { // locallost/game
 // })
 
 router.get('/field', (req, res, next) => {
-  res.status(200).send(generateField())
 })
 
 module.exports = router
