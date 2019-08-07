@@ -60,7 +60,6 @@ function renderGamePage() {
 }
 
 function checkButton(x, y, object) {
-  debugger
   socket.emit('shot', {
     idX: x,
     idY: y
