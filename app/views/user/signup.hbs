@@ -37,7 +37,7 @@
       })
         .then(function (response) {
           document.cookie = "apiKey=" + response.data
-          location.replace('http://localhost:3000/login')
+          location.replace('http://{{host}}:{{port}}/login')
         })
         .catch(function (error) {
           debugger

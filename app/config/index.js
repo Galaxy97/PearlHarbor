@@ -1,6 +1,7 @@
 const config = {
   port: 3000,
-  hashsecret: 'battleship'
+  hashsecret: 'battleship',
+  host: 'localhost'
 }
 
 module.exports = config

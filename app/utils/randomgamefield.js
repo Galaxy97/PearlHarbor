@@ -101,41 +101,17 @@ const checkHit = (x, y, player1, player2) => {
       coverArea(player2.ships[shipIndex], player1.enemyField) // if it is we're covering area around it with 1's, that means the area is hit
       console.log('sink')
       console.log('submit')
-      displayFields(player1, player2)
       return true
     }
     console.log('submit')
-    displayFields(player1, player2)
     return true
   } else {
     console.log('havent hit') // if none ship is hit just macking the cell is 1,
     player1.enemyField[x][y] = 1
     player2.matrix[x][y] = 1
     console.log('submitted')
-    displayFields(player1, player2)
     return false
   }
-}
-
-function displayFields (player1, player2) {
-  let string = ''
-  for (let i = 0; i < 10; i++) {
-    let str = ''
-    for (let j = 0; j < 10; j++) {
-      str += (player1.enemyField[i][j]) + ' '
-    }
-    string += (str + '\n')
-  }
-  console.log('\n\n' + string)
-  string = ''
-  for (let i = 0; i < 10; i++) {
-    let str = ''
-    for (let j = 0; j < 10; j++) {
-      str += (player2.matrix[i][j]) + ' '
-    }
-    string += (str + '\n')
-  }
-  console.log('\n\n' + string)
 }
 
 function findShipIndex (x, y, player) {
