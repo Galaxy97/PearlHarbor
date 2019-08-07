@@ -2,7 +2,7 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max))
 }
 
-const randomize = () => {
+const randomize = (id) => {
   const resultMatrix = []
   const resultShips = []
   const ships = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
@@ -82,6 +82,7 @@ const randomize = () => {
   console.log(string)
 
   const result = {
+    id: id,
     matrix: resultMatrix,
     ships: resultShips,
     shipsStatus: new Array(ships.length).fill(false),

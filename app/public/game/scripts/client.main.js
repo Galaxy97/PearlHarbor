@@ -65,21 +65,21 @@ function checkButton(x, y, object) {
     idX: x,
     idY: y
   })
-
-socket.on('shotResult', (data) => {
-
-})
-
-function renderField(obj) {
-  const table = document.createElement('table')
-  for (let i = 0; i < 10; i++) {
-    const tr = document.createElement('tr')
-    for (let j = 0; j < 10; j++) {
-      const td = document.createElement('td')
-      td.innerHTML = `<input type="button" class="btnLosser" onclick = "checkButton(${i}, ${j}, this)">`
-      tr.appendChild(td)
-    }
-    table.appendChild(tr)
-  }
-  obj.appendChild(table)
 }
+  socket.on('shotResult', (data) => {
+
+  })
+
+  function renderField(obj) {
+    const table = document.createElement('table')
+    for (let i = 0; i < 10; i++) {
+      const tr = document.createElement('tr')
+      for (let j = 0; j < 10; j++) {
+        const td = document.createElement('td')
+        td.innerHTML = `<input type="button" class="btnLosser" onclick = "checkButton(${i}, ${j}, this)">`
+        tr.appendChild(td)
+      }
+      table.appendChild(tr)
+    }
+    obj.appendChild(table)
+  }

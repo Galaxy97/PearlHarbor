@@ -56,12 +56,13 @@ module.exports = (io) => {
     })
 
     socket.on('shot', (data) => {
-      let player
       console.log('shot to', data.idX, data.idY)
       if (socket.id === gameStats.player1.id) {
         console.log('player 1 your shot')
+        checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)
       } else if (socket.id === gameStats.player2.id) {
         console.log('player 2 your shot')
+        checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)
       } else {
         console.log('unknown player ERRRRROOOORR')
       }
@@ -74,19 +75,14 @@ module.exports = (io) => {
   })
 }
 
-function battle(io, roomId, socket) {
+function battle (io, roomId, socket) {
   if (roomEnemy.player2 !== undefined) {
     const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-    gameStats.player1.id = arr[0]
-    gameStats.player2.id = arr[1]
     socket.broadcast.to(gameStats.player1.id).emit('infoPlayer2', roomEnemy.player2)
     roomEnemy.player1 = undefined
     roomEnemy.player2 = undefined
-    gameStats.player1 = generateField()
-    gameStats.player2 = generateField()
-    const x = 0
-    const y = 0
-    checkHit(x, y, gameStats.player1, gameStats.player2)
+    gameStats.player1 = generateField(arr[0])
+    gameStats.player2 = generateField(arr[1])
   }
   io.to(roomId).emit('letsBattle')
 }
