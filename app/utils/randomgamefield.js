@@ -99,17 +99,13 @@ const checkHit = (x, y, player1, player2) => {
     const shipIndex = findShipIndex(x, y, player2) // search the ship that have hit
     if (isSank(player2, shipIndex)) { // check if ship have sank
       coverArea(player2.ships[shipIndex], player1.enemyField) // if it is we're covering area around it with 1's, that means the area is hit
-      console.log('sink')
-      console.log('submit')
       return true
     }
-    console.log('submit')
     return true
   } else {
     console.log('havent hit') // if none ship is hit just macking the cell is 1,
     player1.enemyField[x][y] = 1
     player2.matrix[x][y] = 1
-    console.log('submitted')
     return false
   }
 }
