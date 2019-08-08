@@ -5,6 +5,6 @@ const config = require('./app/config/index')
 require('./app/utils/socket')(io)
 
 app.set('port', config.port)
-server.listen(config.port, config.host, () => {
+server.listen(3000, '0.0.0.0', () => {
   console.log(`Server running at ${config.host}`)
 })
