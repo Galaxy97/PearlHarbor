@@ -1,8 +1,9 @@
 const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
 const generateField = require('./randomgamefield').randomize
-const checkHit = require('./randomgamefield').checkHit
-const isFinishGame = require('./randomgamefield').isFinishGame
+const checkHit = require('./checkHit').checkHit
+const isFinishGame = require('./checkHit').isFinishGame
+const updateBase = require('./../routs/user/services').updateBase
 
 const rooms = {
 }
@@ -27,6 +28,7 @@ module.exports = (io) => {
             rooms[roomId].close = true
             rooms[roomId].yourTurn = false
             rooms[roomId].player2 = {
+              apiKey: data.apiKey,
               name: user.name,
               sessions: user.sessions,
               wins: user.wins,
@@ -42,6 +44,7 @@ module.exports = (io) => {
               close: false,
               yourTurn: true,
               player1: {
+                apiKey: data.apiKey,
                 name: user.name,
                 sessions: user.sessions,
                 wins: user.wins,
@@ -78,24 +81,26 @@ module.exports = (io) => {
       }
       if (socket.id === gameStats.player1.id && gameStats.turn === true) {
         console.log('player 1 your shot')
-        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)) {
+        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, data.option)) {
           gameStats.turn = false
         }
         if (isFinishGame(gameStats.player2)) {
           console.log('won')
-          socket.broadcast.to(gameStats.player1.id).emit('won', rooms[data.roomId].player1.name)
+          io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
+          updateBase(rooms[data.roomId].player1, 1)
+          updateBase(rooms[data.roomId].player2, 0)
           commitEnd(data.roomId)
         }
         socket.emit('shotResult', gameStats.player1.enemyField, gameStats.turn)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix, !gameStats.turn)
       } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
-        console.log('player 2 your shot')
-        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)) {
+        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, data.option)) {
           gameStats.turn = true
         }
         if (isFinishGame(gameStats.player1)) {
-          console.log('won v2')
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
+          updateBase(rooms[data.roomId].player1, 0)
+          updateBase(rooms[data.roomId].player2, 1)
           commitEnd(data.roomId)
         }
         socket.emit('shotResult', gameStats.player2.enemyField, !gameStats.turn)
@@ -138,6 +143,6 @@ function battle(io, roomId, socket) {
   io.to(roomId).emit('letsBattle')
 }
 
-function commitEnd(roomId) {
+function commitEnd (roomId) {
   delete rooms[roomId]
 }

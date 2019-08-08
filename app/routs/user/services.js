@@ -61,8 +61,20 @@ const authenticate = (req, res, next) => {
     })
 }
 
+const update = (user, GameResult) => {
+  User.update({ apiKey: user.apiKey },
+    { $inc: { wins: GameResult, sessions: 1 } })
+    .then(() => {
+      console.log('ok')
+    })
+    .catch(() => {
+      console.log('not ok')
+    })
+}
+
 module.exports = {
   loginFunc: login,
   signupFunc: signup,
-  authenticate: authenticate
+  authenticate: authenticate,
+  updateBase: update
 }
