@@ -1,6 +1,6 @@
 const socket = io('http://localhost:3000')
 socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
-let roomId
+
 socket.on('messeage', (data) => {
   debugger
   const playerInfo = document.getElementById('playerInfo')
@@ -12,25 +12,36 @@ socket.on('messeage', (data) => {
     playerInfo.innerHTML = renderInfo(data.player1)
   }
   roomId = data.roomId
-  // Cookies.set('roomId', data.roomId)
+  Cookies.set('roomId', data.roomId)
 })
 socket.on('letsBattle', () => {
   setTimeout(() => {
     alert('start game')
     cleanAll()
     renderGamePage()
-    socket.emit('getMyFileld', roomId)
+    socket.emit('getMyFileld', Cookies.get('roomId'))
   }, 1500)
 })
 
 socket.on('getUserField', (arr) => {
   document.getElementById('user').innerHTML = ''
-  renderUserField(document.getElementById('user'), arr)
+  renderField('user', document.getElementById('user'), arr)
 })
 
 socket.on('infoPlayer2', (data) => {
   const enemyInfo = document.getElementById('enemyInfo')
   enemyInfo.innerHTML = renderInfo(data)
+})
+
+socket.on('shotResult', (data) => {
+  document.getElementById('enemy').innerHTML = ''
+  renderField('enemy', document.getElementById('enemy'), data)
+})
+
+socket.on('won', (name) => {
+  debugger
+  alert('Game finished! Player ' + name + ' won')
+  location.replace('/')
 })
 
 function renderInfo(data) {
@@ -64,7 +75,7 @@ function renderGamePage() {
   divContent.appendChild(divUser)
   divContent.appendChild(divEnemy)
 
-  renderDefaultField(document.getElementById('enemy'))
+  renderField('default', document.getElementById('enemy'))
 }
 
 function checkButton(x, y, object) {
@@ -74,80 +85,51 @@ function checkButton(x, y, object) {
     idY: y
   })
 }
-socket.on('shotResult', (data) => {
-  document.getElementById('enemy').innerHTML = ''
-  renderEnemyField(document.getElementById('enemy'), data)
-})
 
-socket.on('won', (name) => {
-  debugger
-  alert('Game finished! Player ' + name + ' won')
-  location.replace('/')
-})
-
-function renderDefaultField(obj) {
-  const table = document.createElement('table')
-  for (let i = 0; i < 10; i++) {
-    const tr = document.createElement('tr')
-    for (let j = 0; j < 10; j++) {
-      const td = document.createElement('td')
-      td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, this)"></div>`
-      tr.appendChild(td)
-    }
-    table.appendChild(tr)
-  }
-  obj.appendChild(table)
-}
-
-function renderUserField(obj, arr) {
+function renderField(type, obj, arr) {
   const table = document.createElement('table')
   for (let i = 0; i < 10; i++) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {
       const td = document.createElement('td')
       let classbtn
-      if(arr[i][j] === 0) {
-        classbtn = 'btnEmpty'
-      }
-      if(arr[i][j] === 1) {
-        classbtn = 'btnLosser'
-      }
-      if(arr[i][j] === 2) {
-        classbtn = 'btnChunkShip'
-      }
-      if(arr[i][j] === 3) {
-        classbtn = 'btnKill'
-      }
+      switch (type) {
+        case 'enemy':
+          if (arr[i][j] === 0) {
+            classbtn = 'btnEmpty'
+          }
+          if (arr[i][j] === 1) {
+            classbtn = 'btnLosser'
+          }
+          if (arr[i][j] === 2) {
+            classbtn = 'btnKill'
+          }
 
-      td.innerHTML = `<input type="button" class="${classbtn}">`
-      tr.appendChild(td)
-    }
-    table.appendChild(tr)
-  }
-  obj.appendChild(table)
-}
+          if (arr[i][j] === 1 || arr[i][j] === 2) {
+            td.innerHTML = `<input type="button" class="${classbtn}">`
+          } else {
+            td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+          }
+          break
+        case 'user':
+          if (arr[i][j] === 0) {
+            classbtn = 'btnEmpty'
+          }
+          if (arr[i][j] === 1) {
+            classbtn = 'btnLosser'
+          }
+          if (arr[i][j] === 2) {
+            classbtn = 'btnChunkShip'
+          }
+          if (arr[i][j] === 3) {
+            classbtn = 'btnKill'
+          }
 
-function renderEnemyField(obj, arr) {
-  const table = document.createElement('table')
-  for (let i = 0; i < 10; i++) {
-    const tr = document.createElement('tr')
-    for (let j = 0; j < 10; j++) {
-      const td = document.createElement('td')
-      let classbtn
-      if(arr[i][j] === 0) {
-        classbtn = 'btnEmpty'
-      }
-      if(arr[i][j] === 1) {
-        classbtn = 'btnLosser'
-      }
-      if(arr[i][j] === 2) {
-        classbtn = 'btnKill'
-      }
-
-      if(arr[i][j] === 1 || arr[i][j] === 2) {
-        td.innerHTML = `<input type="button" class="${classbtn}">`
-      } else {
-        td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+          td.innerHTML = `<input type="button" class="${classbtn}">`
+          break
+        default:
+          td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, this)"></div>`
+          break
       }
       tr.appendChild(td)
     }
