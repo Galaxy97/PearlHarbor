@@ -76,8 +76,10 @@ socket.on('shotResult', (data) => {
   renderEnemyField(document.getElementById('enemy'), data)
 })
 
-socket.on('gameOver', () => {
-  alert('GG Someone won')
+socket.on('won', (name) => {
+  debugger
+  alert('Game finished! Player ' + name + ' won')
+  location.replace('/')
 })
 
 function renderDefaultField(obj) {

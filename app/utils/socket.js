@@ -2,7 +2,7 @@ const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
 const generateField = require('./randomgamefield').randomize
 const checkHit = require('./randomgamefield').checkHit
-const finishGame = require('./randomgamefield').finishGame
+const isFinishGame = require('./randomgamefield').isFinishGame
 
 const roomEnemy = {
   roomId: null
@@ -65,7 +65,11 @@ module.exports = (io) => {
         console.log('player 1 your shot')
         if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2)) {
           gameStats.turn = false
-          checkFinish(io)
+        }
+        if (isFinishGame(gameStats.player2)) {
+          console.log('won')
+          socket.broadcast.to(gameStats.player1.id).emit('won', roomEnemy.player1.name)
+          commitEnd()
         }
         socket.emit('shotResult', gameStats.player1.enemyField)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
@@ -74,9 +78,13 @@ module.exports = (io) => {
         if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)) {
           gameStats.turn = true
         }
+        if (isFinishGame(gameStats.player1)) {
+          console.log('won v2')
+          io.to(roomEnemy.roomId).emit('won', roomEnemy.player2.name)
+          commitEnd()
+        }
         socket.emit('shotResult', gameStats.player2.enemyField)
         socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix)
-        checkFinish(io)
       } else {
         console.log('unknown player ERRRRROOOORR')
       }
@@ -111,12 +119,8 @@ function battle (io, roomId, socket) {
   io.to(roomId).emit('letsBattle')
 }
 
-function checkFinish (io) {
-  if (finishGame(gameStats.player1, gameStats.player2)) {
-    console.log('FINISH GG WP')
-    io.to(roomEnemy.roomId).emit('gameOver')
-    roomEnemy.roomId = null
-    roomEnemy.player1 = undefined
-    roomEnemy.player2 = undefined
-  }
+function commitEnd () {
+  roomEnemy.roomId = null
+  roomEnemy.player1 = undefined
+  roomEnemy.player2 = undefined
 }
