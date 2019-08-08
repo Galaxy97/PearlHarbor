@@ -1,3 +1,4 @@
+let yourTurn
 if (Cookies.get('apiKey')) {
   const socket = io('http://localhost:3000', {
     reconnection: false
@@ -20,7 +21,9 @@ if (Cookies.get('apiKey')) {
       const enemyInfo = document.getElementById('enemyInfo')
       playerInfo.innerHTML = renderInfo(data.player1)
       enemyInfo.innerHTML = renderInfo(data.player2)
+      yourTurn = data.yourTurn
     } else {
+      yourTurn = data.yourTurn
       playerInfo.innerHTML = renderInfo(data.player1)
     }
     roomId = data.roomId
@@ -40,8 +43,13 @@ if (Cookies.get('apiKey')) {
     }, 1500)
   })
 
-  socket.on('getUserField', (arr) => {
+  socket.on('getUserField', (arr, turn) => {
     document.getElementById('user').innerHTML = ''
+    if (turn) {
+      document.getElementById('arrow').className = 'arrowRight'
+    } else {
+      document.getElementById('arrow').className = 'arrowLeft'
+    }
     renderField('user', document.getElementById('user'), arr)
   })
 
@@ -50,13 +58,17 @@ if (Cookies.get('apiKey')) {
     enemyInfo.innerHTML = renderInfo(data)
   })
 
-  socket.on('shotResult', (data) => {
+  socket.on('shotResult', (data, turn) => {
     document.getElementById('enemy').innerHTML = ''
+    if (turn) {
+      document.getElementById('arrow').className = 'arrowRight'
+    } else {
+      document.getElementById('arrow').className = 'arrowLeft'
+    }
     renderField('enemy', document.getElementById('enemy'), data)
   })
 
   socket.on('won', (name) => {
-    debugger
     Cookies.remove('roomId')
     Cookies.remove('playerId')
     alert('Game finished! Player ' + name + ' won')
@@ -87,11 +99,19 @@ if (Cookies.get('apiKey')) {
     divUser.id = 'user'
     divUser.align = 'center'
     divUser.innerHTML = '<h2>My field</h2>'
+    const divArrow = document.createElement('div')
+    divArrow.id = 'arrow'
+    if (yourTurn) {
+      divArrow.className = 'arrowRight'
+    } else {
+      divArrow.className = 'arrowLeft'
+    }
     const divEnemy = document.createElement('div')
     divEnemy.id = 'enemy'
     divEnemy.align = 'center'
     divEnemy.innerHTML = '<h2>Enemy field</h2>'
     divContent.appendChild(divUser)
+    divContent.appendChild(divArrow)
     divContent.appendChild(divEnemy)
 
     renderField('default', document.getElementById('enemy'))
@@ -107,6 +127,13 @@ if (Cookies.get('apiKey')) {
 
   function renderField(type, obj, arr) {
     const table = document.createElement('table')
+    const caption = document.createElement('caption')
+    if (type === 'enemy') {
+      caption.innerText = 'Enemy Field'
+    } else if (type === 'user') {
+      caption.innerText = 'User Field'
+    }
+    table.appendChild(caption)
     for (let i = 0; i < 10; i++) {
       const tr = document.createElement('tr')
       for (let j = 0; j < 10; j++) {

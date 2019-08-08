@@ -25,13 +25,13 @@ module.exports = (io) => {
           if (roomId) {
             console.log(rooms[roomId])
             rooms[roomId].close = true
+            rooms[roomId].yourTurn = false
             rooms[roomId].player2 = {
               name: user.name,
               sessions: user.sessions,
               wins: user.wins,
               lastPlayDate: user.updatedAt
             }
-
             socket.emit('messeage', rooms[roomId])
             socket.join(roomId)
             battle(io, roomId, socket)
@@ -40,6 +40,7 @@ module.exports = (io) => {
             rooms[roomId] = {
               roomId: roomId,
               close: false,
+              yourTurn: true,
               player1: {
                 name: user.name,
                 sessions: user.sessions,
@@ -67,7 +68,6 @@ module.exports = (io) => {
         socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
       }
       socket.emit('playerId', socket.id)
-      socket.emit('', socket.id)
     })
 
     socket.on('shot', (data) => {
@@ -86,8 +86,8 @@ module.exports = (io) => {
           socket.broadcast.to(gameStats.player1.id).emit('won', rooms[data.roomId].player1.name)
           commitEnd(data.roomId)
         }
-        socket.emit('shotResult', gameStats.player1.enemyField)
-        socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
+        socket.emit('shotResult', gameStats.player1.enemyField, gameStats.turn)
+        socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix, !gameStats.turn)
       } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
         console.log('player 2 your shot')
         if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1)) {
@@ -98,8 +98,8 @@ module.exports = (io) => {
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
           commitEnd(data.roomId)
         }
-        socket.emit('shotResult', gameStats.player2.enemyField)
-        socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix)
+        socket.emit('shotResult', gameStats.player2.enemyField, !gameStats.turn)
+        socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix, gameStats.turn)
       } else {
         console.log('unknown player ERRRRROOOORR', socket.id, 'player1', gameStats.player1.id, 'player2', gameStats.player2.id, gameStats.turn)
       }
@@ -108,10 +108,10 @@ module.exports = (io) => {
     socket.on('getMyFileld', (roomId) => {
       if (socket.id === rooms[roomId].gameStats.player1.id) {
         console.log('player 1 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix)
+        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix, true)
       } else if (socket.id === rooms[roomId].gameStats.player2.id) {
         console.log('player 2 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix)
+        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix, false)
       } else {
         console.log('unknown USER FIELD player ERRRRROOOORR')
       }
@@ -131,7 +131,7 @@ function battle(io, roomId, socket) {
   socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
 
   rooms[roomId].gameStats = {
-    turn: false,
+    turn: true, // first player's turn
     player1: generateField(arr[0]),
     player2: generateField(arr[1])
   }
@@ -139,5 +139,5 @@ function battle(io, roomId, socket) {
 }
 
 function commitEnd(roomId) {
-  delete rooms.roomId
+  delete rooms[roomId]
 }
