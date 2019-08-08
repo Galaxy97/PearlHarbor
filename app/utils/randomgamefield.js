@@ -151,12 +151,7 @@ function coverArea (ship, enemyField) { // to cover area around ship we need to 
 
 function finishGame (player1, player2) { // checking if players have ships yet. If he's not - finishing game
   for (let i = 0; i < player1.shipsStatus.length; i++) {
-    if (player1.shipsStatus[i] === false) {
-      return false
-    }
-  }
-  for (let i = 0; player2.shipsStatus.length; i++) {
-    if (player2.ships[i] === false) {
+    if (player1.shipsStatus[i] === false || player2.shipsStatus[i]) {
       return false
     }
   }

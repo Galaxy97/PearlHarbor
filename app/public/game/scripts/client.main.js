@@ -1,7 +1,8 @@
 const socket = io('http://localhost:3000')
 socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
-
+let roomId
 socket.on('messeage', (data) => {
+  debugger
   const playerInfo = document.getElementById('playerInfo')
   if (data.hasOwnProperty('player2')) {
     const enemyInfo = document.getElementById('enemyInfo')
@@ -10,13 +11,15 @@ socket.on('messeage', (data) => {
   } else {
     playerInfo.innerHTML = renderInfo(data.player1)
   }
+  roomId = data.roomId
+  // Cookies.set('roomId', data.roomId)
 })
 socket.on('letsBattle', () => {
   setTimeout(() => {
     alert('start game')
     cleanAll()
     renderGamePage()
-    socket.emit('getMyFileld')
+    socket.emit('getMyFileld', roomId)
   }, 1500)
 })
 
@@ -66,6 +69,7 @@ function renderGamePage() {
 
 function checkButton(x, y, object) {
   socket.emit('shot', {
+    roomId: roomId,
     idX: x,
     idY: y
   })
@@ -73,6 +77,10 @@ function checkButton(x, y, object) {
 socket.on('shotResult', (data) => {
   document.getElementById('enemy').innerHTML = ''
   renderEnemyField(document.getElementById('enemy'), data)
+})
+
+socket.on('gameOver', () => {
+  alert('GG Someone won')
 })
 
 function renderDefaultField(obj) {
