@@ -1,4 +1,5 @@
 let yourTurn
+let option
 if (Cookies.get('apiKey')) {
   const socket = io('http://localhost:3000', {
     reconnection: false
@@ -8,10 +9,10 @@ if (Cookies.get('apiKey')) {
     socket.emit('recovery', {
       roomId: Cookies.get('roomId'),
       playerId: Cookies.get('playerId')
-     })
-     cleanAll()
-     renderGamePage()
-     socket.emit('getMyFileld', Cookies.get('roomId'))
+    })
+    cleanAll()
+    renderGamePage()
+    socket.emit('getMyFileld', Cookies.get('roomId'))
   } else {
     socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
   }
@@ -113,16 +114,30 @@ if (Cookies.get('apiKey')) {
     divContent.appendChild(divUser)
     divContent.appendChild(divArrow)
     divContent.appendChild(divEnemy)
-
+    
+    const names = ['rowStrike', '4xShot', 'diagonalStrike']
+    names.forEach((element) => {
+      const btn = document.createElement('div')
+      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+      divContent.appendChild(btn)
+    })
     renderField('default', document.getElementById('enemy'))
+  }
+
+  function superWeapon(weapon){
+    option = weapon
+    document.getElementById(weapon + '-btn').remove()
+    alert('Your will be used super weapon ' + weapon)
   }
 
   function checkButton(x, y, object) {
     socket.emit('shot', {
       roomId: Cookies.get('roomId'),
       idX: x,
-      idY: y
+      idY: y,
+      option: option
     })
+    option = undefined
   }
 
   function renderField(type, obj, arr) {
