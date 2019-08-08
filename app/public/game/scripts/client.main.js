@@ -1,7 +1,8 @@
 const socket = io('http://localhost:3000')
 socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
-
+let roomId
 socket.on('messeage', (data) => {
+  debugger
   const playerInfo = document.getElementById('playerInfo')
   if (data.hasOwnProperty('player2')) {
     const enemyInfo = document.getElementById('enemyInfo')
@@ -10,13 +11,15 @@ socket.on('messeage', (data) => {
   } else {
     playerInfo.innerHTML = renderInfo(data.player1)
   }
+  roomId = data.roomId
+  // Cookies.set('roomId', data.roomId)
 })
 socket.on('letsBattle', () => {
   setTimeout(() => {
     alert('start game')
     cleanAll()
     renderGamePage()
-    socket.emit('getMyFileld')
+    socket.emit('getMyFileld', roomId)
   }, 1500)
 })
 
@@ -65,8 +68,8 @@ function renderGamePage() {
 }
 
 function checkButton(x, y, object) {
-  object.onclick = null
   socket.emit('shot', {
+    roomId: roomId,
     idX: x,
     idY: y
   })
@@ -88,7 +91,7 @@ function renderDefaultField(obj) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {
       const td = document.createElement('td')
-      td.innerHTML = `<input type="button" class="btnEmpty" onclick = "checkButton(${i}, ${j}, this)">`
+      td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, this)"></div>`
       tr.appendChild(td)
     }
     table.appendChild(tr)

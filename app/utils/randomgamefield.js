@@ -1,4 +1,4 @@
-function getRandomInt(max) {
+function getRandomInt (max) {
   return Math.floor(Math.random() * Math.floor(max))
 }
 
@@ -26,7 +26,7 @@ const randomize = (id) => {
   for (let shipIndex = 0; shipIndex < ships.length; shipIndex++) {
     let maxHeight = 9
     let maxWidth = 9
-    let condition = getRandomInt(2)
+    const condition = getRandomInt(2)
     if (ships[shipIndex] !== 1) {
       maxHeight = condition ? 9 - ships[shipIndex] : 9
       maxWidth = condition ? 9 : 9 - ships[shipIndex]
@@ -52,9 +52,9 @@ const randomize = (id) => {
     }
     resultShips.push(temparray)
     let itX = temparray[0][0] === 0 ? 0 : temparray[0][0] - 1
-    let itY = temparray[0][1] === 0 ? 0 : temparray[0][1] - 1
-    let XLast = temparray[temparray.length - 1][0] === 9 ? 10 : temparray[temparray.length - 1][0] + 2
-    let YLast = temparray[temparray.length - 1][1] === 9 ? 10 : temparray[temparray.length - 1][1] + 2
+    const itY = temparray[0][1] === 0 ? 0 : temparray[0][1] - 1
+    const XLast = temparray[temparray.length - 1][0] === 9 ? 10 : temparray[temparray.length - 1][0] + 2
+    const YLast = temparray[temparray.length - 1][1] === 9 ? 10 : temparray[temparray.length - 1][1] + 2
     for (itX; itX < XLast; itX++) {
       for (let j = itY; j < YLast; j++) {
         if (resultMatrix[itX][j] !== 2) {
