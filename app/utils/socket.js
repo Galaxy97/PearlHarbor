@@ -53,9 +53,21 @@ module.exports = (io) => {
           }
           console.log('user fron db', user.name)
         })
-        .catch((e) => { 
+        .catch((e) => {
           console.log(e)
         })
+    })
+
+    socket.on('recovery', (data) => {
+      if (rooms[data.roomId].gameStats.player1.id === data.playerId) {
+        rooms[data.roomId].gameStats.player1.id = socket.id
+        socket.emit('shotResult', rooms[data.roomId].gameStats.player1.enemyField)
+      } else if (rooms[data.roomId].gameStats.player2.id === data.playerId) {
+        rooms[data.roomId].gameStats.player2.id = socket.id
+        socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
+      }
+      socket.emit('playerId', socket.id)
+      socket.emit('', socket.id)
     })
 
     socket.on('shot', (data) => {
@@ -105,16 +117,19 @@ module.exports = (io) => {
       }
     })
 
-    console.log('successful connection to socket')
+    console.log('successful connection to socket', socket.id)
     socket.on('disconnect', function () {
-      console.log('Unconnection <--')
+      console.log('Unconnection <--', socket.id)
     })
   })
 }
 
-function battle (io, roomId, socket) {
+function battle(io, roomId, socket) {
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  socket.broadcast.to(arr[0]).emit('infoPlayer2', rooms[roomId].player2) // arr[0] = socket.id player 1
+  socket.broadcast.to(arr[0]).emit('infoPlayer', rooms[roomId].player2)
+  socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
+  socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
+
   rooms[roomId].gameStats = {
     turn: false,
     player1: generateField(arr[0]),
@@ -123,6 +138,6 @@ function battle (io, roomId, socket) {
   io.to(roomId).emit('letsBattle')
 }
 
-function commitEnd (roomId) {
+function commitEnd(roomId) {
   delete rooms.roomId
 }
