@@ -2,7 +2,6 @@ const checkHit = (x, y, player1, player2, option) => {
   if (option === undefined) {
   // if some ship is hit
     if (player2.matrix[x][y] === 2) {
-      console.log('hit')
       player1.enemyField[x][y] = 2
       player2.matrix[x][y] = 3
       // search the ship that have hit
@@ -14,7 +13,7 @@ const checkHit = (x, y, player1, player2, option) => {
         return true
       }
       return true
-    } else {
+    } else if (player2.matrix[x][y] !== 3) {
       // if none ship is hit just macking the cell is 1
       player1.enemyField[x][y] = 1
       player2.matrix[x][y] = 1
@@ -34,6 +33,11 @@ const checkHit = (x, y, player1, player2, option) => {
     for (let i = xleft; i <= xRight; i++) {
       checkHit(i, yLower, player1, player2)
       checkHit(i, yUpper, player1, player2)
+    }
+  }
+  if (option === 'diagonalStrike') {
+    for (let i = 0; i < 10; i++) {
+      checkHit(i, i, player1, player2)
     }
   }
 }

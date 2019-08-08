@@ -69,7 +69,7 @@ module.exports = (io) => {
       }
       if (socket.id === gameStats.player1.id && gameStats.turn === true) {
         console.log('player 1 your shot')
-        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, '4xShot')) {
+        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, data.option)) {
           gameStats.turn = false
         }
         if (isFinishGame(gameStats.player2)) {
@@ -82,12 +82,10 @@ module.exports = (io) => {
         socket.emit('shotResult', gameStats.player1.enemyField)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix)
       } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
-        console.log('player 2 your shot')
-        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, 'rowStrike')) {
+        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, data.option)) {
           gameStats.turn = true
         }
         if (isFinishGame(gameStats.player1)) {
-          console.log('won v2')
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
           updateBase(rooms[data.roomId].player1, 0)
           updateBase(rooms[data.roomId].player2, 1)
@@ -131,5 +129,5 @@ function battle (io, roomId, socket) {
 }
 
 function commitEnd (roomId) {
-  delete rooms.roomId
+  delete rooms[roomId]
 }
