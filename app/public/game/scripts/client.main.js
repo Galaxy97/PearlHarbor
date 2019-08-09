@@ -1,7 +1,7 @@
 let yourTurn
 let option
 if (Cookies.get('apiKey')) {
-  const socket = io('http://localhost:3000', {
+  const socket = io('http://10.0.5.249:3000', {
     reconnection: false
   })
   if (Cookies.get('roomId')) {
