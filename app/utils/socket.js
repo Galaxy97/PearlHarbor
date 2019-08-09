@@ -4,6 +4,7 @@ const generateField = require('./randomgamefield').randomize
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const updateBase = require('./../routs/user/services').updateBase
+const saveToDataBase = require('./../routs/game/services').saveToDataBase
 
 const rooms = {
 }
@@ -91,8 +92,10 @@ module.exports = (io) => {
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
           updateBase(rooms[data.roomId].player1, 1)
           updateBase(rooms[data.roomId].player2, 0)
+          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player1.apiKey)
           commitEnd(data.roomId)
         }
+        saveToDataBase(rooms[data.roomId], data.roomId, false)
         socket.emit('shotResult', gameStats.player1.enemyField, gameStats.turn)
         socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix, !gameStats.turn)
       } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
@@ -106,8 +109,10 @@ module.exports = (io) => {
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
           updateBase(rooms[data.roomId].player1, 0)
           updateBase(rooms[data.roomId].player2, 1)
+          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player2.apiKey)
           commitEnd(data.roomId)
         }
+        saveToDataBase(rooms[data.roomId], data.roomId, false)
         socket.emit('shotResult', gameStats.player2.enemyField, !gameStats.turn)
         socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix, gameStats.turn)
       } else {
@@ -134,7 +139,7 @@ module.exports = (io) => {
   })
 }
 
-function battle(io, roomId, socket) {
+function battle (io, roomId, socket) {
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
   socket.broadcast.to(arr[0]).emit('infoPlayer', rooms[roomId].player2)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
