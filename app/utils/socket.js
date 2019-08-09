@@ -22,7 +22,6 @@ module.exports = (io) => {
             console.log(rooms[element].close)
             return rooms[element].close === false
           })
-          // let roomId
           if (roomId) {
             console.log(rooms[roomId])
             rooms[roomId].close = true
