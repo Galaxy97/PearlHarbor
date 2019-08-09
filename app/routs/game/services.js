@@ -3,6 +3,7 @@ const RequestError = require('../../errors//RequestError')
 const cookie = require('cookie')
 const Room = require('./models/roomsmodel').Rooms
 const Player = require('./models/roomsmodel').Player
+const generateFields = require('../../utils/randomgamefield').randomize
 
 const authenticate = (req, res, next) => {
   if (!req.headers.cookie) {
@@ -36,47 +37,66 @@ const saveToDataBase = (room, roomId, close, winner) => {
         shipsStatus: room.gameStats.player2.shipsStatus,
         enemyField: room.gameStats.player2.enemyField
       })
-      if (foundRoom === null) {
-        new Room({
-          roomId: roomId,
-          isFirstPlayerTurn: room.gameStats.turn,
-          player1: player1,
-          player2: player2,
-          player1socketId: room.gameStats.player1.id,
-          player2socketId: room.gameStats.player2.id,
-          player1apiKey: room.player1.apiKey,
-          player2apiKey: room.player2.apiKey,
-          createdAt: new Date(),
-          isClose: close,
-          winnerApiKey: winner
-        }).save()
-          .then(() => {
-            console.log('game saved')
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      } else {
-        foundRoom.update({
-          isFirstPlayerTurn: room.gameStats.turn,
-          player1: player1,
-          player2: player2,
-          player1socketId: room.gameStats.player1.id,
-          player2socketId: room.gameStats.player2.id,
-          player1apiKey: room.player1.apiKey,
-          player2apiKey: room.player2.apiKey,
-          createdAt: new Date(),
-          isClose: close,
-          winnerApiKey: winner
+
+      foundRoom.update({
+        isFirstPlayerTurn: room.gameStats.turn,
+        player1: player1,
+        player2: player2,
+        player1socketId: room.gameStats.player1.id,
+        player2socketId: room.gameStats.player2.id,
+        player1apiKey: room.player1.apiKey,
+        player2apiKey: room.player2.apiKey,
+        createdAt: new Date(),
+        isClose: close,
+        winnerApiKey: winner
+      })
+        .then(() => {
+          console.log('upd')
         })
-          .then(() => {
-            console.log('upd')
-          })
-          .catch((err) => {
-            console.log(err)
-          }) 
-      }
+        .catch((err) => {
+          console.log(err)
+        })
     })
 }
 
-module.exports = { authenticate, saveToDataBase }
+const createNewRoom = (roomId, player1apiKey, player1socketId) => {
+  Room.create({
+    roomId: roomId,
+    isFirstPlayerTurn: true,
+    player1: createNewPlayer(),
+    player2: null,
+    player1socketId: player1socketId,
+    player2socketId: null,
+    player1apiKey: player1apiKey,
+    player2apiKey: null,
+    isClose: false
+  })
+}
+
+const createNewPlayer = () => {
+  const data = generateFields()
+  return new Player({
+    matrix: data.matrix,
+    ships: data.ships,
+    shipsStatus: data.shipsStatus,
+    enemyField: data.enemyField,
+    superWeapon: ['rowStrike', '4xShot', 'diagonalStrike']
+  })
+}
+
+const findFreeRoom = () => {
+  return Room.findOne({ isClose: false })
+}
+
+const getPlayerInfo = (apiKey) => {
+  return User.findOne({ apiKey: apiKey })
+}
+
+module.exports = {
+  authenticate,
+  saveToDataBase,
+  createNewRoom,
+  createNewPlayer,
+  findFreeRoom,
+  getPlayerInfo
+}

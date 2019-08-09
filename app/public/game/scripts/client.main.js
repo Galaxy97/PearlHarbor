@@ -17,6 +17,7 @@ if (Cookies.get('apiKey')) {
     socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
   }
   socket.on('messeage', (data) => {
+    debugger
     servicesMesseage(data)
   })
 

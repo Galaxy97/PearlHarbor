@@ -1,12 +1,15 @@
 const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
-const generateField = require('./randomgamefield').randomize
+
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const updateBase = require('./../routs/user/services').updateBase
 const saveToDataBase = require('./../routs/game/services').saveToDataBase
+const createNewRoom = require('../routs/game/services').createNewRoom
 
-const rooms = {
+const services = {
+  game: require('./../routs/game/services'),
+  user: require('./../routs/user/services')
 }
 
 module.exports = (io) => {
@@ -17,45 +20,58 @@ module.exports = (io) => {
           apiKey: data.apiKey
         })
         .then((user) => {
-          const idS = Object.keys(rooms)
-          console.log('idS', idS)
-          let roomId = idS.find((element) => {
-            console.log(rooms[element].close)
-            return rooms[element].close === false
-          })
-          if (roomId) {
-            console.log(rooms[roomId])
-            rooms[roomId].close = true
-            rooms[roomId].yourTurn = false
-            rooms[roomId].player2 = {
-              apiKey: data.apiKey,
-              name: user.name,
-              sessions: user.sessions,
-              wins: user.wins,
-              lastPlayDate: user.updatedAt
-            }
-            socket.emit('messeage', rooms[roomId])
-            socket.join(roomId)
-            battle(io, roomId, socket)
-          } else {
-            roomId = uuidv4()
-            rooms[roomId] = {
-              roomId: roomId,
-              close: false,
-              yourTurn: true,
-              player1: {
-                apiKey: data.apiKey,
-                name: user.name,
-                sessions: user.sessions,
-                wins: user.wins,
-                lastPlayDate: user.updatedAt
+          // find free room
+          services.game.findFreeRoom()
+            .then((roomData) => {
+              console.log('roomData is', roomData)
+              if (roomData) {
+                // if free room is exsist this player 2 and start game
+                socket.join(roomData.roomId)
+                const room = {
+                  roomId: roomData.roomId,
+                  yourTurn: true,
+                  player1: null, // info about player 1
+                  player2: {
+                    apiKey: data.apiKey,
+                    name: user.name,
+                    sessions: user.sessions,
+                    wins: user.wins,
+                    lastPlayDate: user.updatedAt
+                  }
+                }
+                services.game.getPlayerInfo(roomData.player1apiKey)
+                  .then((info) => {
+                    console.log('infoooo', info)
+                    room.player1 = info
+                    socket.emit('messeage', room) // send playerInfo
+                    socket.join(roomData.roomId)
+                    battle(io, roomData.roomId, socket, room.player2)
+                  })
+                  .catch((e) => {
+                    console.log(e)
+                  })
+              } else {
+                // create new room
+                const roomId = uuidv4()
+                const room = {
+                  roomId: roomId,
+                  yourTurn: true,
+                  player1: {
+                    apiKey: data.apiKey,
+                    name: user.name,
+                    sessions: user.sessions,
+                    wins: user.wins,
+                    lastPlayDate: user.updatedAt
+                  }
+                }
+                createNewRoom(roomId, data.apiKey, socket.id) // create new room in database
+                socket.join(roomId)
+                socket.emit('messeage', room)
               }
-            }
-            socket.join(roomId)
-            console.log('rooms.roomId', rooms[roomId])
-            socket.emit('messeage', rooms[roomId])
-          }
-          console.log('user fron db', user.name)
+            })
+            .catch((e) => {
+              console.log('error', e)
+            })
         })
         .catch((e) => {
           console.log(e)
@@ -139,18 +155,13 @@ module.exports = (io) => {
   })
 }
 
-function battle (io, roomId, socket) {
+function battle(io, roomId, socket, player2Info) {
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  socket.broadcast.to(arr[0]).emit('infoPlayer', rooms[roomId].player2)
+  socket.broadcast.to(arr[0]).emit('infoPlayer2', player2Info)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
   socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
 
-  rooms[roomId].gameStats = {
-    turn: true, // first player's turn
-    player1: generateField(arr[0]),
-    player2: generateField(arr[1])
-  }
-  io.to(roomId).emit('letsBattle')
+  // io.to(roomId).emit('letsBattle')
 }
 
 function commitEnd(roomId) {

@@ -17,6 +17,10 @@ const player = mongoose.Schema({
   enemyField: {
     type: [[Number]],
     require: true
+  },
+  superWeapon: {
+    type: [String],
+    require: true
   }
 })
 
