@@ -14,7 +14,7 @@ function servicesMesseage(data) {
 }
 
 function servicesGetUserField(arr, turn) {
-  document.getElementById('user').innerHTML = ''
+  document.getElementById('user').innerHTML = '<h2>My field</h2>'
   if (turn) {
     document.getElementById('arrow').className = 'arrowRight'
   } else {
@@ -24,13 +24,13 @@ function servicesGetUserField(arr, turn) {
 }
 
 function servicesShotResult(data, turn) {
-  document.getElementById('enemy').innerHTML = ''
+  document.getElementById('enemy').children[1].innerHTML = ''
   if (turn) {
     document.getElementById('arrow').className = 'arrowRight'
   } else {
     document.getElementById('arrow').className = 'arrowLeft'
   }
-  renderField('enemy', document.getElementById('enemy'), data)
+  renderField('enemy', document.getElementById('enemy').children[1], data)
 }
 
 function renderInfo(data) {
@@ -53,6 +53,10 @@ function renderGamePage() {
   header.style.textAlign = 'center'
   divContent.appendChild(header)
 
+  const divShipsUser = document.createElement('div')
+  divShipsUser.id = 'shipsUser'
+  divShipsUser.align = 'center'
+  divShipsUser.innerHTML = '<h2>My Ships</h2>'
   const divUser = document.createElement('div')
   divUser.id = 'user'
   divUser.align = 'center'
@@ -64,20 +68,26 @@ function renderGamePage() {
   } else {
     divArrow.className = 'arrowLeft'
   }
+  const divShipsEnemy = document.createElement('div')
+  divShipsEnemy.id = 'shipsEnemy'
+  divShipsEnemy.align = 'center'
+  divShipsEnemy.innerHTML = '<h2>Enemy Ships</h2>'
+
   const divEnemy = document.createElement('div')
   divEnemy.id = 'enemy'
   divEnemy.align = 'center'
   divEnemy.innerHTML = '<h2>Enemy field</h2>'
+
+  const superButtons = document.createElement('div')
+  superButtons.id = 'superButtons'
+  superButtons.align = 'center'
+
+  divContent.appendChild(divShipsUser)
   divContent.appendChild(divUser)
   divContent.appendChild(divArrow)
   divContent.appendChild(divEnemy)
+  divContent.appendChild(divShipsEnemy)
 
-  const names = ['rowStrike', '4xShot', 'diagonalStrike']
-  names.forEach((element) => {
-    const btn = document.createElement('div')
-    btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
-    divContent.appendChild(btn)
-  })
   renderField('default', document.getElementById('enemy'))
 }
 
@@ -99,13 +109,6 @@ function servicesCheckButton(socket, x, y) {
 
 function renderField(type, obj, arr) {
   const table = document.createElement('table')
-  const caption = document.createElement('caption')
-  if (type === 'enemy') {
-    caption.innerText = 'Enemy Field'
-  } else if (type === 'user') {
-    caption.innerText = 'User Field'
-  }
-  table.appendChild(caption)
   for (let i = 0; i < 10; i++) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {

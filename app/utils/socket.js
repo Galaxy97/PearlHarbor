@@ -80,6 +80,9 @@ module.exports = (io) => {
       }
       if (socket.id === gameStats.player1.id && gameStats.turn === true) {
         console.log('player 1 your shot')
+        if (data.option) {
+          gameStats.player1.superWeapon.splice(gameStats.player1.superWeapon.indexOf(data.option), 1)
+        }
         if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, data.option)) {
           gameStats.turn = false
         }
@@ -95,6 +98,9 @@ module.exports = (io) => {
       } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
         if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, data.option)) {
           gameStats.turn = true
+        }
+        if (data.option) {
+          gameStats.player2.superWeapon.splice(gameStats.player2.superWeapon.indexOf(data.option), 1)
         }
         if (isFinishGame(gameStats.player1)) {
           io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
@@ -112,10 +118,10 @@ module.exports = (io) => {
     socket.on('getMyFileld', (roomId) => {
       if (socket.id === rooms[roomId].gameStats.player1.id) {
         console.log('player 1 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix, true)
+        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix, true, rooms[roomId].gameStats.player1.superWeapon)
       } else if (socket.id === rooms[roomId].gameStats.player2.id) {
         console.log('player 2 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix, false)
+        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix, false, rooms[roomId].gameStats.player2.superWeapon)
       } else {
         console.log('unknown USER FIELD player ERRRRROOOORR')
       }
@@ -142,6 +148,6 @@ function battle(io, roomId, socket) {
   io.to(roomId).emit('letsBattle')
 }
 
-function commitEnd (roomId) {
+function commitEnd(roomId) {
   delete rooms[roomId]
 }

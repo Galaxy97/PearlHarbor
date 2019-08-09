@@ -33,8 +33,15 @@ if (Cookies.get('apiKey')) {
     }, 1500)
   })
 
-  socket.on('getUserField', (arr, turn) => {
+  socket.on('getUserField', (arr, turn, weapons) => {
     servicesGetUserField(arr, turn)
+    const ul = document.createElement('ul')
+    weapons.forEach((element) => {
+      const btn = document.createElement('li')
+      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+      ul.appendChild(btn)
+    })
+    document.getElementById('enemy').appendChild(ul)
   })
 
   socket.on('infoPlayer2', (data) => {

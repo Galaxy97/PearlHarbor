@@ -82,6 +82,7 @@ const randomize = (id) => {
   console.log(string)
 
   const result = {
+    superWeapon: ['rowStrike', '4xShot', 'diagonalStrike'],
     id: id,
     matrix: resultMatrix,
     ships: resultShips,
