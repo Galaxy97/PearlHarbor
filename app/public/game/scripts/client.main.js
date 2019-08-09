@@ -26,6 +26,7 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('letsBattle', () => {
+    debugger
     setTimeout(() => {
       alert('start game')
       cleanAll()

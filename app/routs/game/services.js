@@ -22,40 +22,16 @@ const authenticate = (req, res, next) => {
     })
 }
 
-const saveToDataBase = (room, roomId, close, winner) => {
-  Room.findOne({ roomId: roomId })
-    .then((foundRoom) => {
-      const player1 = new Player({
-        matrix: room.gameStats.player1.matrix,
-        ships: room.gameStats.player1.ships,
-        shipsStatus: room.gameStats.player1.shipsStatus,
-        enemyField: room.gameStats.player1.enemyField
-      })
-      const player2 = new Player({
-        matrix: room.gameStats.player2.matrix,
-        ships: room.gameStats.player2.ships,
-        shipsStatus: room.gameStats.player2.shipsStatus,
-        enemyField: room.gameStats.player2.enemyField
-      })
-
-      foundRoom.update({
-        isFirstPlayerTurn: room.gameStats.turn,
-        player1: player1,
-        player2: player2,
-        player1socketId: room.gameStats.player1.id,
-        player2socketId: room.gameStats.player2.id,
-        player1apiKey: room.player1.apiKey,
-        player2apiKey: room.player2.apiKey,
-        createdAt: new Date(),
-        isClose: close,
-        winnerApiKey: winner
-      })
-        .then(() => {
-          console.log('upd')
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+const updateRoom = (roomId, close) => {
+  Room.update({ roomId: roomId },
+    {
+      isClose: close
+    },
+    { multi: false }, function (err) {
+      if (err) {
+        console.log(err)
+      }
+      console.log('succesfull update')      
     })
 }
 
@@ -94,7 +70,7 @@ const getPlayerInfo = (apiKey) => {
 
 module.exports = {
   authenticate,
-  saveToDataBase,
+  updateRoom,
   createNewRoom,
   createNewPlayer,
   findFreeRoom,

@@ -156,12 +156,13 @@ module.exports = (io) => {
 }
 
 function battle(io, roomId, socket, player2Info) {
+  services.game.updateRoom(roomId, true) // close this room for new connections
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
   socket.broadcast.to(arr[0]).emit('infoPlayer2', player2Info)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
   socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
 
-  // io.to(roomId).emit('letsBattle')
+  io.to(roomId).emit('letsBattle')
 }
 
 function commitEnd(roomId) {
