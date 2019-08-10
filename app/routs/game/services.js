@@ -22,24 +22,27 @@ const authenticate = (req, res, next) => {
     })
 }
 
-const updateRoom = (roomId, close) => {
+const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
   Room.update({ roomId: roomId },
     {
+      player2: player2,
+      player2socketId: player2socketId,
+      player2apiKey: player2apiKey,
       isClose: close
     },
     { multi: false }, function (err) {
       if (err) {
         console.log(err)
       }
-      console.log('succesfull update')      
+      console.log('succesfull update')
     })
 }
 
-const createNewRoom = (roomId, player1apiKey, player1socketId) => {
+const createNewRoom = (roomId, player1, player1apiKey, player1socketId) => {
   Room.create({
     roomId: roomId,
     isFirstPlayerTurn: true,
-    player1: createNewPlayer(),
+    player1: player1,
     player2: null,
     player1socketId: player1socketId,
     player2socketId: null,

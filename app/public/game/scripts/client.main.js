@@ -1,5 +1,7 @@
 let yourTurn
 let option
+let player
+
 if (Cookies.get('apiKey')) {
   const socket = io('http://localhost:3000', {
     reconnection: false
@@ -26,24 +28,12 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('letsBattle', () => {
-    debugger
     setTimeout(() => {
       alert('start game')
       cleanAll()
       renderGamePage()
-      socket.emit('getMyFileld', Cookies.get('roomId'))
+      servicesRenderUserField(player.matrix, yourTurn, player.superWeapon)
     }, 1500)
-  })
-
-  socket.on('getUserField', (arr, turn, weapons) => {
-    servicesGetUserField(arr, turn)
-    const ul = document.createElement('ul')
-    weapons.forEach((element) => {
-      const btn = document.createElement('li')
-      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
-      ul.appendChild(btn)
-    })
-    document.getElementById('enemy').appendChild(ul)
   })
 
   socket.on('infoPlayer2', (data) => {

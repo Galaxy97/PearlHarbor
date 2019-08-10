@@ -2,18 +2,19 @@ function servicesMesseage(data) {
   const playerInfo = document.getElementById('playerInfo')
   if (data.hasOwnProperty('player2')) {
     const enemyInfo = document.getElementById('enemyInfo')
-    playerInfo.innerHTML = renderInfo(data.player1)
-    enemyInfo.innerHTML = renderInfo(data.player2)
+    playerInfo.innerHTML = renderInfo(data.player1Info)
+    enemyInfo.innerHTML = renderInfo(data.player2Info)
     yourTurn = data.yourTurn
   } else {
     yourTurn = data.yourTurn
-    playerInfo.innerHTML = renderInfo(data.player1)
+    playerInfo.innerHTML = renderInfo(data.player1Info)
   }
   roomId = data.roomId
+  player = data.player
   Cookies.set('roomId', data.roomId, { expires: 0.01 })
 }
 
-function servicesGetUserField(arr, turn) {
+function servicesRenderUserField(arr, turn) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
   if (turn) {
     document.getElementById('arrow').className = 'arrowRight'
@@ -21,16 +22,30 @@ function servicesGetUserField(arr, turn) {
     document.getElementById('arrow').className = 'arrowLeft'
   }
   renderField('user', document.getElementById('user'), arr)
+  const ul = document.createElement('ul')
+    weapons.forEach((element) => {
+      const btn = document.createElement('li')
+      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+      ul.appendChild(btn)
+    })
+    document.getElementById('enemy').appendChild(ul)
 }
 
-function servicesShotResult(data, turn) {
+function servicesShotResult(arr, turn) {
   document.getElementById('enemy').children[1].innerHTML = ''
   if (turn) {
     document.getElementById('arrow').className = 'arrowRight'
   } else {
     document.getElementById('arrow').className = 'arrowLeft'
   }
-  renderField('enemy', document.getElementById('enemy').children[1], data)
+  renderField('enemy', document.getElementById('enemy').children[1], arr)
+  const ul = document.createElement('ul')
+  weapons.forEach((element) => {
+    const btn = document.createElement('li')
+    btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+    ul.appendChild(btn)
+  })
+  document.getElementById('enemy').appendChild(ul)
 }
 
 function renderInfo(data) {

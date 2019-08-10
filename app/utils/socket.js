@@ -27,11 +27,13 @@ module.exports = (io) => {
               if (roomData) {
                 // if free room is exsist this player 2 and start game
                 socket.join(roomData.roomId)
+                const player = services.game.createNewPlayer()
                 const room = {
                   roomId: roomData.roomId,
-                  yourTurn: true,
-                  player1: null, // info about player 1
-                  player2: {
+                  yourTurn: false,
+                  player: player, // fiels for game player 2
+                  player1Info: null, // info about player 1
+                  player2Info: {
                     apiKey: data.apiKey,
                     name: user.name,
                     sessions: user.sessions,
@@ -39,24 +41,26 @@ module.exports = (io) => {
                     lastPlayDate: user.updatedAt
                   }
                 }
-                services.game.getPlayerInfo(roomData.player1apiKey)
+                services.game.getPlayerInfo(roomData.player1apiKey) // call to database
                   .then((info) => {
                     console.log('infoooo', info)
-                    room.player1 = info
+                    room.player1Info = info
                     socket.emit('messeage', room) // send playerInfo
                     socket.join(roomData.roomId)
-                    battle(io, roomData.roomId, socket, room.player2)
+                    battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
                   })
                   .catch((e) => {
                     console.log(e)
                   })
-              } else {
+              } else { // this player 1
                 // create new room
                 const roomId = uuidv4()
+                const player = services.game.createNewPlayer()
                 const room = {
                   roomId: roomId,
                   yourTurn: true,
-                  player1: {
+                  player: player, // fiels for game
+                  player1Info: {
                     apiKey: data.apiKey,
                     name: user.name,
                     sessions: user.sessions,
@@ -64,7 +68,7 @@ module.exports = (io) => {
                     lastPlayDate: user.updatedAt
                   }
                 }
-                createNewRoom(roomId, data.apiKey, socket.id) // create new room in database
+                createNewRoom(roomId, player, data.apiKey, socket.id) // create new room in database
                 socket.join(roomId)
                 socket.emit('messeage', room)
               }
@@ -78,23 +82,20 @@ module.exports = (io) => {
         })
     })
 
-    socket.on('recovery', (data) => {
-      if (rooms[data.roomId].gameStats.player1.id === data.playerId) {
-        rooms[data.roomId].gameStats.player1.id = socket.id
-        socket.emit('shotResult', rooms[data.roomId].gameStats.player1.enemyField)
-      } else if (rooms[data.roomId].gameStats.player2.id === data.playerId) {
-        rooms[data.roomId].gameStats.player2.id = socket.id
-        socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
-      }
-      socket.emit('playerId', socket.id)
-    })
+    // socket.on('recovery', (data) => {
+    //   if (rooms[data.roomId].gameStats.player1.id === data.playerId) {
+    //     rooms[data.roomId].gameStats.player1.id = socket.id
+    //     socket.emit('shotResult', rooms[data.roomId].gameStats.player1.enemyField)
+    //   } else if (rooms[data.roomId].gameStats.player2.id === data.playerId) {
+    //     rooms[data.roomId].gameStats.player2.id = socket.id
+    //     socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
+    //   }
+    //   socket.emit('playerId', socket.id)
+    // })
 
     socket.on('shot', (data) => {
       console.log('shot to', data.idX, data.idY)
       const gameStats = rooms[data.roomId].gameStats
-      if (gameStats.isContinue === false) {
-        console.log('FINISH GG WP')
-      }
       if (socket.id === gameStats.player1.id && gameStats.turn === true) {
         console.log('player 1 your shot')
         if (data.option) {
@@ -155,8 +156,8 @@ module.exports = (io) => {
   })
 }
 
-function battle(io, roomId, socket, player2Info) {
-  services.game.updateRoom(roomId, true) // close this room for new connections
+function battle(io, roomId, socket, player, player2Info, apiKey) {
+  services.game.updateRoom(roomId, player, socket.id, apiKey, true) // close this room for new connections
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
   socket.broadcast.to(arr[0]).emit('infoPlayer2', player2Info)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
