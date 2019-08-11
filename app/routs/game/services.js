@@ -23,7 +23,7 @@ const authenticate = (req, res, next) => {
 }
 
 const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
-  Room.update({ roomId: roomId },
+  Room.updateOne({ roomId: roomId },
     {
       player2: player2,
       player2socketId: player2socketId,
@@ -36,6 +36,31 @@ const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
       }
       console.log('succesfull update')
     })
+}
+
+const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; player2 = false
+  let update
+  if (player) {
+    update = {
+      player1socketId: newSocketId
+    }
+  } else {
+    update = {
+      player2socketId: newSocketId
+    }
+  }
+  Room.updateOne({ roomId: roomId },
+    update,
+    { multi: false }, function (err) {
+      if (err) {
+        console.log(err)
+      }
+      console.log('succesfull update socketID')
+    })
+}
+
+const recoveryGameRoom = (roomId) => {
+  return Room.findOne({ roomId: roomId })
 }
 
 const createNewRoom = (roomId, player1, player1apiKey, player1socketId) => {
@@ -77,5 +102,7 @@ module.exports = {
   createNewRoom,
   createNewPlayer,
   findFreeRoom,
-  getPlayerInfo
+  getPlayerInfo,
+  recoveryGameRoom,
+  updateSocketId
 }

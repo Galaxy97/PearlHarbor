@@ -12,19 +12,23 @@ if (Cookies.get('apiKey')) {
       roomId: Cookies.get('roomId'),
       playerId: Cookies.get('playerId')
     })
-    cleanAll()
-    renderGamePage()
-    socket.emit('getMyFileld', Cookies.get('roomId'))
   } else {
     socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
   }
   socket.on('messeage', (data) => {
-    debugger
     servicesMesseage(data)
   })
 
   socket.on('playerId', (playerId) => {
     Cookies.set('playerId', playerId, { expires: 0.01 })
+  })
+
+  socket.on('userRecovery', (data) => {
+    cleanAll()
+    renderGamePage()
+    servicesRenderUserField(data.playerField, data.turn, data.superWeapon)
+    document.getElementById('enemy').children[1].innerHTML = ''
+    renderField('enemy', document.getElementById('enemy').children[1], data.enemyField)
   })
 
   socket.on('letsBattle', () => {

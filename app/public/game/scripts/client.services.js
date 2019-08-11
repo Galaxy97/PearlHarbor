@@ -14,7 +14,7 @@ function servicesMesseage(data) {
   Cookies.set('roomId', data.roomId, { expires: 0.01 })
 }
 
-function servicesRenderUserField(arr, turn) {
+function servicesRenderUserField(arr, turn, weapons) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
   if (turn) {
     document.getElementById('arrow').className = 'arrowRight'

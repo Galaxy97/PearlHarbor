@@ -82,16 +82,33 @@ module.exports = (io) => {
         })
     })
 
-    // socket.on('recovery', (data) => {
-    //   if (rooms[data.roomId].gameStats.player1.id === data.playerId) {
-    //     rooms[data.roomId].gameStats.player1.id = socket.id
-    //     socket.emit('shotResult', rooms[data.roomId].gameStats.player1.enemyField)
-    //   } else if (rooms[data.roomId].gameStats.player2.id === data.playerId) {
-    //     rooms[data.roomId].gameStats.player2.id = socket.id
-    //     socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
-    //   }
-    //   socket.emit('playerId', socket.id)
-    // })
+    socket.on('recovery', (data) => {
+      services.game.recoveryGameRoom(data.roomId)
+        .then((room) => {
+          console.log(room)
+          if (data.playerId === room.player1socketId) {
+            socket.emit('userRecovery', {
+              playerField: room.player1.matrix,
+              enemyField: room.player1.enemyField,
+              superWeapon: room.player1.superWeapon,
+              turn: room.isFirstPlayerTurn
+            })
+            services.game.updateSocketId(data.roomId, socket.id, true) // player1 = true ; player2 = false
+          } else if (data.playerId === room.player2socketId) {
+            socket.emit('userRecovery', {
+              playerField: room.player2.matrix,
+              enemyField: room.player2.enemyField,
+              superWeapon: room.player2.superWeapon,
+              turn: !room.isFirstPlayerTurn
+            })
+            services.game.updateSocketId(data.roomId, socket.id, false) // player1 = true ; player2 = false
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+      socket.emit('playerId', socket.id)
+    })
 
     socket.on('shot', (data) => {
       console.log('shot to', data.idX, data.idY)
