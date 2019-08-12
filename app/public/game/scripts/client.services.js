@@ -1,6 +1,6 @@
 function servicesMesseage(data) {
   const playerInfo = document.getElementById('playerInfo')
-  if (data.hasOwnProperty('player2')) {
+  if (data.hasOwnProperty('player2Info')) {
     const enemyInfo = document.getElementById('enemyInfo')
     playerInfo.innerHTML = renderInfo(data.player1Info)
     enemyInfo.innerHTML = renderInfo(data.player2Info)

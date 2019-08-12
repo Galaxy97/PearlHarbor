@@ -16,6 +16,7 @@ if (Cookies.get('apiKey')) {
     socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
   }
   socket.on('messeage', (data) => {
+    debugger
     servicesMesseage(data)
   })
 
@@ -45,7 +46,8 @@ if (Cookies.get('apiKey')) {
     }, 1500)
   })
 
-  socket.on('infoPlayer2', (data) => {
+  socket.on('enemyInfo', (data) => {
+    debugger
     const enemyInfo = document.getElementById('enemyInfo')
     enemyInfo.innerHTML = renderInfo(data)
   })
