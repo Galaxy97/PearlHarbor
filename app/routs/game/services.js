@@ -3,6 +3,7 @@ const RequestError = require('../../errors//RequestError')
 const cookie = require('cookie')
 const Room = require('./models/roomsmodel').Rooms
 const Player = require('./models/roomsmodel').Player
+const generateFields = require('../../utils/randomgamefield').randomize
 
 const authenticate = (req, res, next) => {
   if (!req.headers.cookie) {
@@ -21,66 +22,87 @@ const authenticate = (req, res, next) => {
     })
 }
 
-const saveToDataBase = (room, roomId, close, winner) => {
-  Room.findOne({ roomId: roomId })
-    .then((foundRoom) => {
-      const player1 = new Player({
-        matrix: room.gameStats.player1.matrix,
-        ships: room.gameStats.player1.ships,
-        shipsStatus: room.gameStats.player1.shipsStatus,
-        enemyField: room.gameStats.player1.enemyField
-      })
-      const player2 = new Player({
-        matrix: room.gameStats.player2.matrix,
-        ships: room.gameStats.player2.ships,
-        shipsStatus: room.gameStats.player2.shipsStatus,
-        enemyField: room.gameStats.player2.enemyField
-      })
-      if (foundRoom === null) {
-        new Room({
-          roomId: roomId,
-          isFirstPlayerTurn: room.gameStats.turn,
-          player1: player1,
-          player2: player2,
-          player1socketId: room.gameStats.player1.id,
-          player2socketId: room.gameStats.player2.id,
-          player1apiKey: room.player1.apiKey,
-          player2apiKey: room.player2.apiKey,
-          createdAt: new Date(),
-          isClose: close,
-          winnerApiKey: winner
-        }).save()
-          .then(() => {
-            console.log('game saved')
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      } else {
-        foundRoom.update({
-          isFirstPlayerTurn: room.gameStats.turn,
-          player1: player1,
-          player2: player2,
-          player1socketId: room.gameStats.player1.id,
-          player2socketId: room.gameStats.player2.id,
-          player1apiKey: room.player1.apiKey,
-          player2apiKey: room.player2.apiKey,
-          createdAt: new Date(),
-          isClose: close,
-          winnerApiKey: winner
-        })
-          .then(() => {
-            console.log('upd')
-          })
-          .catch((err) => {
-            console.log(err)
-          })
+const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
+  Room.updateOne({ roomId: roomId },
+    {
+      player2: player2,
+      player2socketId: player2socketId,
+      player2apiKey: player2apiKey,
+      isClose: close
+    },
+    { multi: false }, function (err) {
+      if (err) {
+        console.log(err)
       }
+      console.log('succesfull update')
     })
 }
 
-const getFromDataBase = (room, roomId, player1, player2) => {
-
+const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; player2 = false
+  let update
+  if (player) {
+    update = {
+      player1socketId: newSocketId
+    }
+  } else {
+    update = {
+      player2socketId: newSocketId
+    }
+  }
+  Room.updateOne({ roomId: roomId },
+    update,
+    { multi: false }, function (err) {
+      if (err) {
+        console.log(err)
+      }
+      console.log('succesfull update socketID')
+    })
 }
 
-module.exports = { authenticate, saveToDataBase, getFromDataBase }
+const getGameRoom = (roomId) => {
+  return Room.findOne({ roomId: roomId })
+}
+
+const createNewRoom = (roomId, player1, player1apiKey, player1socketId) => {
+  Room.create({
+    roomId: roomId,
+    isFirstPlayerTurn: true,
+    player1: player1,
+    player2: null,
+    player1socketId: player1socketId,
+    player2socketId: null,
+    player1apiKey: player1apiKey,
+    player2apiKey: null,
+    isClose: false
+  })
+}
+
+const createNewPlayer = (perks) => {
+  const data = generateFields()
+  return new Player({
+    matrix: data.matrix,
+    ships: data.ships,
+    shipsStatus: data.shipsStatus,
+    enemyField: data.enemyField,
+    superWeapon: perks
+  })
+}
+
+const findFreeRoom = () => {
+  return Room.findOne({ isClose: false })
+}
+
+const getPlayerInfo = (apiKey) => {
+  return User.findOne({ apiKey: apiKey })
+}
+
+module.exports = {
+  authenticate,
+  updateRoom,
+  createNewRoom,
+  createNewPlayer,
+  findFreeRoom,
+  getPlayerInfo,
+  getGameRoom,
+  updateSocketId
+}

@@ -25,6 +25,11 @@ const checkHit = (x, y, player1, player2, option) => {
       checkHit(x, i, player1, player2)
     }
   }
+  if (option === 'columnStrike') {
+    for (let j = 0; j < 10; j++) {
+      checkHit(j, y, player1, player2)
+    }
+  }
   if (option === '4xShot') {
     const xleft = x === 9 ? 8 : x
     const xRight = xleft + 1
@@ -35,9 +40,26 @@ const checkHit = (x, y, player1, player2, option) => {
       checkHit(i, yUpper, player1, player2)
     }
   }
-  if (option === 'diagonalStrike') {
+  if (option === 'leftDiagonal') {
     for (let i = 0; i < 10; i++) {
       checkHit(i, i, player1, player2)
+    }
+  }
+  if (option === 'rightDiagonal') {
+    for (let i = 10, j = 0; j < 10 && i > 0; i--, j++) {
+      checkHit(i, j, player1, player2)
+    }
+  }
+  if (option === 'boundsStrike100') {
+    for (let i = 0; i < 10; i += 9) {
+      for (let j = 0; j < 10; j++) {
+        checkHit(i, j, player1, player2)
+      }
+    }
+    for (let j = 0; j < 10; j += 9) {
+      for (let i = 1; i < 9; i++) {
+        checkHit(i, j, player1, player2)
+      }
     }
   }
 }

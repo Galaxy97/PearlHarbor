@@ -24,30 +24,20 @@ const getRandomInt = (max) => {
 
 const getRandomPerk = (req, res, next) => {
   let result
-  const value = getRandomInt(78)
+  const value = getRandomInt(48)
   if (value === 0) {
     result = 'boundsStrike100'
   } else if (value === 1) {
     result = 'rhombStrike'
   } else if (value < 4) {
-    result = 'boundsStrike81'
-  } else if (value < 7) {
-    result = 'boundsStrike64'
-  } else if (value < 11) {
-    result = 'boundsStrike49'
-  } else if (value < 17) {
-    result = 'boundsStrike25'
-  } else if (value < 24) {
-    result = 'leftDiagonal'
-  } else if (value < 31) {
     result = 'rightDiagonal'
-  } else if (value < 39) {
+  } else if (value < 7) {
+    result = 'leftDiagonal'
+  } else if (value < 17) {
     result = 'columnStrike'
-  } else if (value < 47) {
+  } else if (value < 27) {
     result = 'rowStrike'
-  } else if (value < 57) {
-    result = 'boundsStrike16'
-  } else if (value < 77) {
+  } else if (value < 47) {
     result = '4xShot'
   }
   User.findOne({ apiKey: cookie.parse(req.headers.cookie).apiKey })

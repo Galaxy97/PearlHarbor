@@ -1,12 +1,16 @@
 const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
-const generateField = require('./randomgamefield').randomize
+
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const updateBase = require('./../routs/user/services').updateBase
 const saveToDataBase = require('./../routs/game/services').saveToDataBase
+const createNewRoom = require('../routs/game/services').createNewRoom
+const Room = require('./../routs/game/models/roomsmodel').Rooms
 
-const rooms = {
+const services = {
+  game: require('./../routs/game/services'),
+  user: require('./../routs/user/services')
 }
 
 module.exports = (io) => {
@@ -17,46 +21,62 @@ module.exports = (io) => {
           apiKey: data.apiKey
         })
         .then((user) => {
-          const idS = Object.keys(rooms)
-          console.log('idS', idS)
-          let roomId = idS.find((element) => {
-            console.log(rooms[element].close)
-            return rooms[element].close === false
-          })
-          // let roomId
-          if (roomId) {
-            console.log(rooms[roomId])
-            rooms[roomId].close = true
-            rooms[roomId].yourTurn = false
-            rooms[roomId].player2 = {
-              apiKey: data.apiKey,
-              name: user.name,
-              sessions: user.sessions,
-              wins: user.wins,
-              lastPlayDate: user.updatedAt
-            }
-            socket.emit('messeage', rooms[roomId])
-            socket.join(roomId)
-            battle(io, roomId, socket)
-          } else {
-            roomId = uuidv4()
-            rooms[roomId] = {
-              roomId: roomId,
-              close: false,
-              yourTurn: true,
-              player1: {
-                apiKey: data.apiKey,
-                name: user.name,
-                sessions: user.sessions,
-                wins: user.wins,
-                lastPlayDate: user.updatedAt
+          // find free room
+          services.game.findFreeRoom()
+            .then((roomData) => {
+              console.log('roomData is', roomData)
+              if (roomData) {
+                // if free room is exsist this player 2 and start game
+                socket.join(roomData.roomId)
+                const player = services.game.createNewPlayer(user.perks)
+                const room = {
+                  roomId: roomData.roomId,
+                  yourTurn: false,
+                  player: player, // fiels for game player 2
+                  player1Info: null, // info about player 1
+                  player2Info: {
+                    apiKey: data.apiKey,
+                    name: user.name,
+                    sessions: user.sessions,
+                    wins: user.wins,
+                    lastPlayDate: user.updatedAt
+                  }
+                }
+                services.game.getPlayerInfo(roomData.player1apiKey) // call to database
+                  .then((info) => {
+                    console.log('infoooo', info)
+                    room.player1Info = info
+                    socket.emit('messeage', room) // send playerInfo
+                    socket.join(roomData.roomId)
+                    battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
+                  })
+                  .catch((e) => {
+                    console.log(e)
+                  })
+              } else { // this player 1
+                // create new room
+                const roomId = uuidv4()
+                const player = services.game.createNewPlayer(user.perks)
+                const room = {
+                  roomId: roomId,
+                  yourTurn: true,
+                  player: player, // fiels for game
+                  player1Info: {
+                    apiKey: data.apiKey,
+                    name: user.name,
+                    sessions: user.sessions,
+                    wins: user.wins,
+                    lastPlayDate: user.updatedAt
+                  }
+                }
+                createNewRoom(roomId, player, data.apiKey, socket.id) // create new room in database
+                socket.join(roomId)
+                socket.emit('messeage', room)
               }
-            }
-            socket.join(roomId)
-            console.log('rooms.roshipsStatusomId', rooms[roomId])
-            socket.emit('messeage', rooms[roomId])
-          }
-          console.log('user fron db', user.name)
+            })
+            .catch((e) => {
+              console.log('error', e)
+            })
         })
         .catch((e) => {
           console.log(e)
@@ -64,67 +84,75 @@ module.exports = (io) => {
     })
 
     socket.on('recovery', (data) => {
-      if (rooms[data.roomId].gameStats.player1.id === data.playerId) {
-        rooms[data.roomId].gameStats.player1.id = socket.id
-        socket.emit('shotResult', rooms[data.roomId].gameStats.player1.enemyField)
-      } else if (rooms[data.roomId].gameStats.player2.id === data.playerId) {
-        rooms[data.roomId].gameStats.player2.id = socket.id
-        socket.emit('shotResult', rooms[data.roomId].gameStats.player2.enemyField)
-      }
+      services.game.getGameRoom(data.roomId)
+        .then((room) => {
+          if (data.playerId === room.player1socketId) {
+            socket.emit('userRecovery', {
+              playerField: room.player1.matrix,
+              enemyField: room.player1.enemyField,
+              superWeapon: room.player1.superWeapon,
+              turn: room.isFirstPlayerTurn
+            })
+            services.game.updateSocketId(data.roomId, socket.id, true) // player1 = true ; player2 = false
+          } else if (data.playerId === room.player2socketId) {
+            socket.emit('userRecovery', {
+              playerField: room.player2.matrix,
+              enemyField: room.player2.enemyField,
+              superWeapon: room.player2.superWeapon,
+              turn: !room.isFirstPlayerTurn
+            })
+            services.game.updateSocketId(data.roomId, socket.id, false) // player1 = true ; player2 = false
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
       socket.emit('playerId', socket.id)
     })
 
     socket.on('shot', (data) => {
       console.log('shot to', data.idX, data.idY)
-      const gameStats = rooms[data.roomId].gameStats
-      if (gameStats.isContinue === false) {
-        console.log('FINISH GG WP')
-      }
-      if (socket.id === gameStats.player1.id && gameStats.turn === true) {
-        console.log('player 1 your shot')
-        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, data.option)) {
-          gameStats.turn = false
-        }
-        if (isFinishGame(gameStats.player2)) {
-          console.log('won')
-          io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
-          updateBase(rooms[data.roomId].player1, 1)
-          updateBase(rooms[data.roomId].player2, 0)
-          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player1.apiKey)
-          commitEnd(data.roomId)
-        }
-        saveToDataBase(rooms[data.roomId], data.roomId, false)
-        socket.emit('shotResult', gameStats.player1.enemyField, gameStats.turn)
-        socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix, !gameStats.turn)
-      } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
-        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, data.option)) {
-          gameStats.turn = true
-        }
-        if (isFinishGame(gameStats.player1)) {
-          io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
-          updateBase(rooms[data.roomId].player1, 0)
-          updateBase(rooms[data.roomId].player2, 1)
-          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player2.apiKey)
-          commitEnd(data.roomId)
-        }
-        saveToDataBase(rooms[data.roomId], data.roomId, false)
-        socket.emit('shotResult', gameStats.player2.enemyField, !gameStats.turn)
-        socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix, gameStats.turn)
-      } else {
-        console.log('unknown player ERRRRROOOORR', socket.id, 'player1', gameStats.player1.id, 'player2', gameStats.player2.id, gameStats.turn)
-      }
-    })
-
-    socket.on('getMyFileld', (roomId) => {
-      if (socket.id === rooms[roomId].gameStats.player1.id) {
-        console.log('player 1 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix, true)
-      } else if (socket.id === rooms[roomId].gameStats.player2.id) {
-        console.log('player 2 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix, false)
-      } else {
-        console.log('unknown USER FIELD player ERRRRROOOORR')
-      }
+      services.game.getGameRoom(data.roomId)
+        .then((room) => {
+          if (socket.id === room.player1socketId && room.isFirstPlayerTurn) {
+            if (data.option) {
+              room.player1.superWeapon.splice(room.player1.superWeapon.indexOf(data.option), 1)
+            }
+            if (!checkHit(data.idX, data.idY, room.player1, room.player2, data.option)) {
+              room.isFirstPlayerTurn = false
+            }
+            if (isFinishGame(room.player2)) {
+              console.log('won')
+              io.to(data.roomId).emit('won', 'lol')
+            }
+            room.markModified('player1')
+            room.markModified('player2')
+            room.save()
+            socket.emit('shotResult', room.player1.enemyField, room.isFirstPlayerTurn)
+            socket.broadcast.to(room.player2socketId).emit('updateUserField', room.player2.matrix, !room.isFirstPlayerTurn)
+          } else if (socket.id === room.player2socketId && !room.isFirstPlayerTurn) {
+            if (data.option) {
+              room.player2.superWeapon.splice(room.player2.superWeapon.indexOf(data.option), 1)
+            }
+            if (!checkHit(data.idX, data.idY, room.player2, room.player1, data.option)) {
+              room.isFirstPlayerTurn = true
+            }
+            if (isFinishGame(room.player1)) {
+              console.log('won')
+              io.to(data.roomId).emit('won', 'lol')
+            }
+            room.markModified('player1')
+            room.markModified('player2')
+            room.save()
+            socket.emit('shotResult', room.player2.enemyField, !room.isFirstPlayerTurn)
+            socket.broadcast.to(room.player1socketId).emit('updateUserField', room.player1.matrix, room.isFirstPlayerTurn)
+          } else {
+            console.log('bad click')
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     })
 
     console.log('successful connection to socket', socket.id)
@@ -134,20 +162,12 @@ module.exports = (io) => {
   })
 }
 
-function battle (io, roomId, socket) {
+function battle(io, roomId, socket, player, player2Info, apiKey) {
+  services.game.updateRoom(roomId, player, socket.id, apiKey, true) // close this room for new connections
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  socket.broadcast.to(arr[0]).emit('infoPlayer', rooms[roomId].player2)
+  socket.broadcast.to(arr[0]).emit('infoPlayer2', player2Info)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
   socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
 
-  rooms[roomId].gameStats = {
-    turn: true, // first player's turn
-    player1: generateField(arr[0]),
-    player2: generateField(arr[1])
-  }
   io.to(roomId).emit('letsBattle')
-}
-
-function commitEnd (roomId) {
-  delete rooms[roomId]
 }

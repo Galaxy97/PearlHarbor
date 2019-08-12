@@ -7,6 +7,16 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <style>
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      display: inline;
+    }
+
     #playerInfo {
       width: 40%;
       float: left;
@@ -49,6 +59,7 @@
       cursor: pointer;
       border: none;
     }
+
     .btnChunkShip {
       width: 40px;
       height: 40px;
@@ -56,12 +67,26 @@
       cursor: pointer;
       border: none;
     }
+
     .btnKill {
       width: 40px;
       height: 40px;
       background: url(/game/img/kill.png) no-repeat;
       cursor: pointer;
       border: none;
+    }
+
+    #shipsUser {
+      width: 10%;
+      float: left;
+      margin-top: 20px;
+    }
+
+    #shipsEnemy {
+      width: 10%;
+      height: 600px;
+      float: left;
+      margin-top: 20px;
     }
 
     #user {
@@ -75,22 +100,24 @@
       float: left;
       margin-top: 20px;
     }
-    .arrowRight{
-      width: 30%;
-      height: 500px;
+
+    .arrowRight {
+      width: 20%;
+      height: 300px;
       float: left;
-      margin-top: 20px;
+      margin-top: 175px;
       background-image: url(/game/img/arrowLeft.png);
       transform: rotate(180deg);
-      background-size: cover;      
+      background-size: cover;
     }
-    .arrowLeft{
-      width: 30%;
-      height: 500px;
+
+    .arrowLeft {
+      width: 20%;
+      height: 300px;
       float: left;
-      margin-top: 20px;
+      margin-top: 175px;
       background-image: url(/game/img/arrowLeft.png);
-      background-size: cover;      
+      background-size: cover;
     }
   </style>
 </head>
@@ -110,6 +137,7 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/game/scripts/client.services.js"></script>
   <script src="/game/scripts/client.main.js"></script>
 </body>
 
