@@ -83,7 +83,7 @@ module.exports = (io) => {
     })
 
     socket.on('recovery', (data) => {
-      services.game.recoveryGameRoom(data.roomId)
+      services.game.getGameRoom(data.roomId)
         .then((room) => {
           console.log(room)
           if (data.playerId === room.player1socketId) {
@@ -112,58 +112,44 @@ module.exports = (io) => {
 
     socket.on('shot', (data) => {
       console.log('shot to', data.idX, data.idY)
-      const gameStats = rooms[data.roomId].gameStats
-      if (socket.id === gameStats.player1.id && gameStats.turn === true) {
-        console.log('player 1 your shot')
-        if (data.option) {
-          gameStats.player1.superWeapon.splice(gameStats.player1.superWeapon.indexOf(data.option), 1)
-        }
-        if (!checkHit(data.idX, data.idY, gameStats.player1, gameStats.player2, data.option)) {
-          gameStats.turn = false
-        }
-        if (isFinishGame(gameStats.player2)) {
-          console.log('won')
-          io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
-          updateBase(rooms[data.roomId].player1, 1)
-          updateBase(rooms[data.roomId].player2, 0)
-          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player1.apiKey)
-          commitEnd(data.roomId)
-        }
-        saveToDataBase(rooms[data.roomId], data.roomId, false)
-        socket.emit('shotResult', gameStats.player1.enemyField, gameStats.turn)
-        socket.broadcast.to(gameStats.player2.id).emit('getUserField', gameStats.player2.matrix, !gameStats.turn)
-      } else if (socket.id === gameStats.player2.id && gameStats.turn === false) {
-        if (!checkHit(data.idX, data.idY, gameStats.player2, gameStats.player1, data.option)) {
-          gameStats.turn = true
-        }
-        if (data.option) {
-          gameStats.player2.superWeapon.splice(gameStats.player2.superWeapon.indexOf(data.option), 1)
-        }
-        if (isFinishGame(gameStats.player1)) {
-          io.to(data.roomId).emit('won', rooms[data.roomId].player2.name)
-          updateBase(rooms[data.roomId].player1, 0)
-          updateBase(rooms[data.roomId].player2, 1)
-          saveToDataBase(rooms[data.roomId], data.roomId, true, rooms[data.roomId].player2.apiKey)
-          commitEnd(data.roomId)
-        }
-        saveToDataBase(rooms[data.roomId], data.roomId, false)
-        socket.emit('shotResult', gameStats.player2.enemyField, !gameStats.turn)
-        socket.broadcast.to(gameStats.player1.id).emit('getUserField', gameStats.player1.matrix, gameStats.turn)
-      } else {
-        console.log('unknown player ERRRRROOOORR', socket.id, 'player1', gameStats.player1.id, 'player2', gameStats.player2.id, gameStats.turn)
-      }
-    })
-
-    socket.on('getMyFileld', (roomId) => {
-      if (socket.id === rooms[roomId].gameStats.player1.id) {
-        console.log('player 1 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player1.matrix, true, rooms[roomId].gameStats.player1.superWeapon)
-      } else if (socket.id === rooms[roomId].gameStats.player2.id) {
-        console.log('player 2 your shot')
-        socket.emit('getUserField', rooms[roomId].gameStats.player2.matrix, false, rooms[roomId].gameStats.player2.superWeapon)
-      } else {
-        console.log('unknown USER FIELD player ERRRRROOOORR')
-      }
+      services.game.getGameRoom(data.roomId)
+        .then((room) => {
+          console.log(room)
+          if (socket.id === room.player1socketId) {
+            if (data.option) {
+              room.player1.superWeapon.splice(room.player1.superWeapon.indexOf(data.option), 1)
+            }
+            if (!checkHit(data.idX, data.idY, room.player1, room.player2, data.option)) {
+              room.isFirstPlayerTurn = false
+              // call func write to db
+            }
+            if (isFinishGame(room.player2)) {
+              console.log('won')
+              io.to(data.roomId).emit('won', 'lol')
+              commitEnd(data.roomId)
+            }
+            socket.emit('shotResult', room.player1.enemyField, room.isFirstPlayerTurn)
+            socket.broadcast.to(room.player2socketId).emit('updateUserField', room.player2.matrix, !room.isFirstPlayerTurn)
+          } else if (socket.id === room.player2socketId) {
+            if (data.option) {
+              room.player2.superWeapon.splice(room.player2.superWeapon.indexOf(data.option), 1)
+            }
+            if (!checkHit(data.idX, data.idY, room.player2, room.player1, data.option)) {
+              room.isFirstPlayerTurn = true
+              // call func write to db
+            }
+            if (isFinishGame(room.player1)) {
+              console.log('won')
+              io.to(data.roomId).emit('won', 'lol')
+              commitEnd(data.roomId)
+            }
+            socket.emit('shotResult', room.player2.enemyField, room.isFirstPlayerTurn)
+            socket.broadcast.to(room.player1socketId).emit('updateUserField', room.player1.matrix, !room.isFirstPlayerTurn)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     })
 
     console.log('successful connection to socket', socket.id)

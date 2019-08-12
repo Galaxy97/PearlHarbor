@@ -22,6 +22,7 @@ function servicesRenderUserField(arr, turn, weapons) {
     document.getElementById('arrow').className = 'arrowLeft'
   }
   renderField('user', document.getElementById('user'), arr)
+  if (weapons !== undefined) {
   const ul = document.createElement('ul')
     weapons.forEach((element) => {
       const btn = document.createElement('li')
@@ -29,6 +30,7 @@ function servicesRenderUserField(arr, turn, weapons) {
       ul.appendChild(btn)
     })
     document.getElementById('enemy').appendChild(ul)
+  }
 }
 
 function servicesShotResult(arr, turn) {
@@ -39,13 +41,6 @@ function servicesShotResult(arr, turn) {
     document.getElementById('arrow').className = 'arrowLeft'
   }
   renderField('enemy', document.getElementById('enemy').children[1], arr)
-  const ul = document.createElement('ul')
-  weapons.forEach((element) => {
-    const btn = document.createElement('li')
-    btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
-    ul.appendChild(btn)
-  })
-  document.getElementById('enemy').appendChild(ul)
 }
 
 function renderInfo(data) {

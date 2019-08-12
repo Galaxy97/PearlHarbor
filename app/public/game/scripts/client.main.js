@@ -23,6 +23,11 @@ if (Cookies.get('apiKey')) {
     Cookies.set('playerId', playerId, { expires: 0.01 })
   })
 
+  socket.on('updateUserField', (arr, turn) => {
+    debugger
+    servicesRenderUserField(arr, turn)
+  })
+
   socket.on('userRecovery', (data) => {
     cleanAll()
     renderGamePage()

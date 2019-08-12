@@ -59,7 +59,7 @@ const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; pl
     })
 }
 
-const recoveryGameRoom = (roomId) => {
+const getGameRoom = (roomId) => {
   return Room.findOne({ roomId: roomId })
 }
 
@@ -103,6 +103,6 @@ module.exports = {
   createNewPlayer,
   findFreeRoom,
   getPlayerInfo,
-  recoveryGameRoom,
+  getGameRoom,
   updateSocketId
 }
