@@ -33,7 +33,6 @@ module.exports = (io) => {
                   roomId: roomData.roomId,
                   yourTurn: false,
                   player: player, // fiels for game player 2
-                  player1Info: null, // info about player 1
                   player2Info: {
                     apiKey: data.apiKey,
                     name: user.name,
@@ -44,9 +43,10 @@ module.exports = (io) => {
                 }
                 services.game.getPlayerInfo(roomData.player1apiKey) // call to database
                   .then((info) => {
-                    console.log('infoooo', info)
+                    // console.log('infoooo', info)
                     room.player1Info = info
                     socket.emit('messeage', room) // send playerInfo
+                    // socket.emit('enemyInfo', info) // send playerInfo
                     socket.join(roomData.roomId)
                     battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
                   })
@@ -165,7 +165,7 @@ module.exports = (io) => {
 function battle(io, roomId, socket, player, player2Info, apiKey) {
   services.game.updateRoom(roomId, player, socket.id, apiKey, true) // close this room for new connections
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
-  socket.broadcast.to(arr[0]).emit('infoPlayer2', player2Info)
+  socket.broadcast.to(arr[0]).emit('enemyInfo', player2Info)
   socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
   socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
 
