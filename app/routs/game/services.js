@@ -74,9 +74,13 @@ const saveToDataBase = (room, roomId, close, winner) => {
           })
           .catch((err) => {
             console.log(err)
-          }) 
+          })
       }
     })
 }
 
-module.exports = { authenticate, saveToDataBase }
+const getFromDataBase = (room, roomId, player1, player2) => {
+
+}
+
+module.exports = { authenticate, saveToDataBase, getFromDataBase }

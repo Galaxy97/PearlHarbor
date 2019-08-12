@@ -24,6 +24,9 @@ const user = mongoose.Schema({
   apiKey: {
     type: String,
     require: true
+  },
+  perks: {
+    type: [String]
   }
 }, {
   timestamps: { createdAt: 'createdAt' }

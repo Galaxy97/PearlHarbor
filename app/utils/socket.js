@@ -53,7 +53,7 @@ module.exports = (io) => {
               }
             }
             socket.join(roomId)
-            console.log('rooms.roomId', rooms[roomId])
+            console.log('rooms.roshipsStatusomId', rooms[roomId])
             socket.emit('messeage', rooms[roomId])
           }
           console.log('user fron db', user.name)
