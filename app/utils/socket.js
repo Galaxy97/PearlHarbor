@@ -16,43 +16,59 @@ const services = {
 module.exports = (io) => {
   io.sockets.on('connection', function (socket) {
     socket.on('authentication', (data) => {
-      User.findOne(
-        {
-          apiKey: data.apiKey
-        })
+      services.game.getPlayerInfo(data.apiKey)
         .then((user) => {
           // find free room
           services.game.findFreeRoom()
             .then((roomData) => {
               console.log('roomData is', roomData)
               if (roomData) {
-                // if free room is exsist this player 2 and start game
-                socket.join(roomData.roomId)
-                const player = services.game.createNewPlayer(user.perks)
-                const room = {
-                  roomId: roomData.roomId,
-                  yourTurn: false,
-                  player: player, // fiels for game player 2
-                  player2Info: {
-                    apiKey: data.apiKey,
-                    name: user.name,
-                    sessions: user.sessions,
-                    wins: user.wins,
-                    lastPlayDate: user.updatedAt
+                if (data.apiKey === roomData.player1apiKey) {
+                  services.game.getPlayerInfo(roomData.player1apiKey) // call to database
+                    .then((info) => {
+                      console.log('infoooo', info)
+                      socket.emit('messeage', {
+                        yourTurn: roomData.isFirstPlayerTurn,
+                        roomId: roomData.roomId,
+                        player1Info: info,
+                        player: roomData.player1
+                      }) // send playerInfo
+                      // io.sockets.connected[roomData.player1socketId].leave(roomData.roomId)
+                      socket.join(roomData.roomId)
+                      services.game.updateSocketId(roomData.roomId, socket.id, true) // player1 = true ; player2 = false
+                    })
+                    .catch((e) => {
+                      console.log(e)
+                    })
+                } else {
+                  // if free room is exsist this player 2 and start game
+                  socket.join(roomData.roomId)
+                  const player = services.game.createNewPlayer(user.perks)
+                  const room = {
+                    roomId: roomData.roomId,
+                    yourTurn: false,
+                    player: player, // fiels for game player 2
+                    player2Info: {
+                      apiKey: data.apiKey,
+                      name: user.name,
+                      sessions: user.sessions,
+                      wins: user.wins,
+                      lastPlayDate: user.updatedAt
+                    }
                   }
+                  services.game.getPlayerInfo(roomData.player1apiKey) // call to database
+                    .then((info) => {
+                      // console.log('infoooo', info)
+                      room.player1Info = info
+                      socket.emit('messeage', room) // send playerInfo
+                      // socket.emit('enemyInfo', info) // send playerInfo
+                      socket.join(roomData.roomId)
+                      battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
+                    })
+                    .catch((e) => {
+                      console.log(e)
+                    })
                 }
-                services.game.getPlayerInfo(roomData.player1apiKey) // call to database
-                  .then((info) => {
-                    // console.log('infoooo', info)
-                    room.player1Info = info
-                    socket.emit('messeage', room) // send playerInfo
-                    // socket.emit('enemyInfo', info) // send playerInfo
-                    socket.join(roomData.roomId)
-                    battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
-                  })
-                  .catch((e) => {
-                    console.log(e)
-                  })
               } else { // this player 1
                 // create new room
                 const roomId = uuidv4()
