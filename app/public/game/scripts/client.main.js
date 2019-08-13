@@ -24,15 +24,18 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('updateUserField', (arr, turn) => {
-    servicesRenderUserField(arr, turn)
+    servicesRenderUserField(arr.matrix, turn)
+    servicesRendreShips('user', arr.ships)
   })
 
   socket.on('userRecovery', (data) => {
+    debugger
     cleanAll()
     renderGamePage()
     servicesRenderUserField(data.playerField, data.turn, data.superWeapon)
     document.getElementById('enemy').children[1].innerHTML = ''
     renderField('enemy', document.getElementById('enemy').children[1], data.enemyField)
+    servicesRendreShips('user', data.ships)
   })
 
   socket.on('letsBattle', () => {
@@ -41,6 +44,7 @@ if (Cookies.get('apiKey')) {
       cleanAll()
       renderGamePage()
       servicesRenderUserField(player.matrix, yourTurn, player.superWeapon)
+      servicesRendreShips('user',player.ships, player.shipsStatus)
     }, 1500)
   })
 
@@ -50,7 +54,8 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('shotResult', (data, turn) => {
-    servicesShotResult(data, turn)
+    servicesShotResult(data.enemyField, turn)
+    // servicesRendreShips('enemy', data.ships)
   })
 
   socket.on('won', (name) => {

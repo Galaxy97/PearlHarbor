@@ -168,3 +168,22 @@ function renderField(type, obj, arr) {
   }
   obj.appendChild(table)
 }
+
+function servicesRendreShips(mode, ships) {
+  if (mode === 'user') {
+    const div = document.getElementById('shipsUser')
+    let text = '<h4>User ships</h4>'
+    debugger
+    for (const ship of ships) {
+      for (const chunk of ship) {
+        if (chunk[2]) {
+          text += '<input type="button" class="btnKill">'
+        } else {
+          text += '<input type="button" class="btnEmpty">'
+        }
+      }
+      text += '<hr>'
+    }
+    div.innerHTML = text
+  }
+}

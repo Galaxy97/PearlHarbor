@@ -104,6 +104,7 @@ module.exports = (io) => {
         .then((room) => {
           if (data.playerId === room.player1socketId) {
             socket.emit('userRecovery', {
+              ships: room.player2.ships,
               playerField: room.player1.matrix,
               enemyField: room.player1.enemyField,
               superWeapon: room.player1.superWeapon,
@@ -112,6 +113,7 @@ module.exports = (io) => {
             services.game.updateSocketId(data.roomId, socket.id, true) // player1 = true ; player2 = false
           } else if (data.playerId === room.player2socketId) {
             socket.emit('userRecovery', {
+              ships: room.player2.ships,
               playerField: room.player2.matrix,
               enemyField: room.player2.enemyField,
               superWeapon: room.player2.superWeapon,
@@ -144,8 +146,8 @@ module.exports = (io) => {
             room.markModified('player1')
             room.markModified('player2')
             room.save()
-            socket.emit('shotResult', room.player1.enemyField, room.isFirstPlayerTurn)
-            socket.broadcast.to(room.player2socketId).emit('updateUserField', room.player2.matrix, !room.isFirstPlayerTurn)
+            socket.emit('shotResult', room.player1, room.isFirstPlayerTurn)
+            socket.broadcast.to(room.player2socketId).emit('updateUserField', room.player2, !room.isFirstPlayerTurn)
           } else if (socket.id === room.player2socketId && !room.isFirstPlayerTurn) {
             if (data.option) {
               room.player2.superWeapon.splice(room.player2.superWeapon.indexOf(data.option), 1)
@@ -160,7 +162,7 @@ module.exports = (io) => {
             room.markModified('player1')
             room.markModified('player2')
             room.save()
-            socket.emit('shotResult', room.player2.enemyField, !room.isFirstPlayerTurn)
+            socket.emit('shotResult', room.player2, !room.isFirstPlayerTurn)
             socket.broadcast.to(room.player1socketId).emit('updateUserField', room.player1.matrix, room.isFirstPlayerTurn)
           } else {
             console.log('bad click')
