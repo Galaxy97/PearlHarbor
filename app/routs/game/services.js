@@ -22,13 +22,11 @@ const authenticate = (req, res, next) => {
     })
 }
 
-const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
+const updateRoom = (roomId, player, close) => {
   Room.updateOne({ roomId: roomId },
     {
-      player2: player2,
-      player2socketId: player2socketId,
-      player2apiKey: player2apiKey,
-      isClose: close
+      isClose: close,
+      $push: { Players: player }
     },
     { multi: false }, function (err) {
       if (err) {
@@ -63,23 +61,21 @@ const getGameRoom = (roomId) => {
   return Room.findOne({ roomId: roomId })
 }
 
-const createNewRoom = (roomId, player1, player1apiKey, player1socketId) => {
+const createNewRoom = (roomId, player, typeOfRoom) => {
   Room.create({
     roomId: roomId,
-    isFirstPlayerTurn: true,
-    player1: player1,
-    player2: null,
-    player1socketId: player1socketId,
-    player2socketId: null,
-    player1apiKey: player1apiKey,
-    player2apiKey: null,
+    indexOfCurrentPlayer: 0,
+    Players: [player],
+    typeOfRoom: typeOfRoom,
     isClose: false
   })
 }
 
-const createNewPlayer = (perks) => {
+const createNewPlayer = (perks, socketId, apiKey) => {
   const data = generateFields()
   return new Player({
+    socketId: socketId,
+    apiKey: apiKey,
     matrix: data.matrix,
     ships: data.ships,
     shipsStatus: data.shipsStatus,
@@ -88,12 +84,26 @@ const createNewPlayer = (perks) => {
   })
 }
 
-const findFreeRoom = () => {
-  return Room.findOne({ isClose: false })
+const findFreeRoom = (type) => {
+  return Room.findOne({ isClose: false, typeOfRoom: type })
 }
 
 const getPlayerInfo = (apiKey) => {
   return User.findOne({ apiKey: apiKey })
+}
+
+const isPlayer = (room, socket) => room.Players.find(player => {
+  return player.socketId === socket
+})
+
+const checkTurn = (room, socket, turn) => {
+  const foundUser = isPlayer(room, socket)
+  const index = room.Players.indexOf(foundUser)
+  if (index === turn) {
+    return true
+  } else {
+    return false
+  }
 }
 
 module.exports = {
@@ -104,5 +114,6 @@ module.exports = {
   findFreeRoom,
   getPlayerInfo,
   getGameRoom,
-  updateSocketId
+  updateSocketId,
+  checkTurn
 }

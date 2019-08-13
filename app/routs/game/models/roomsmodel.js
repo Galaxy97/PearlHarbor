@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 mongoose.set('useCreateIndex', true)
 
 const player = mongoose.Schema({
+  socketId: {
+    type: String,
+    require: true
+  },
+  apiKey: {
+    type: String,
+    require: true
+  },
   matrix: {
     type: [[Number]],
     require: true
@@ -29,6 +37,37 @@ const rooms = mongoose.Schema({
     type: String,
     require: true
   },
+  indexOfCurrentPlayer: {
+    type: Number,
+    require: true
+  },
+  Players: {
+    type: [player],
+    require: true
+  },
+  typeOfRoom: {
+    type: Number,
+    require: true
+  },
+  isClose: {
+    type: Boolean,
+    require: false
+  },
+  winnerApiKey: {
+    type: String,
+    require: false
+  },
+  createdAt: {
+    type: Date,
+    require: true
+  }
+})
+
+const tripleRoom = mongoose.Schema({
+  roomId: {
+    type: String,
+    require: true
+  },
   isFirstPlayerTurn: {
     type: Boolean,
     require: true
@@ -41,6 +80,10 @@ const rooms = mongoose.Schema({
     type: player,
     require: true
   },
+  player3: {
+    type: player,
+    require: true
+  },
   player1socketId: {
     type: String,
     require: true
@@ -49,11 +92,19 @@ const rooms = mongoose.Schema({
     type: String,
     require: true
   },
+  player3socketId: {
+    type: String,
+    require: true
+  },
   player1apiKey: {
     type: String,
     require: true
   },
   player2apiKey: {
+    type: String,
+    require: true
+  },
+  player3apiKey: {
     type: String,
     require: true
   },
@@ -73,4 +124,5 @@ const rooms = mongoose.Schema({
 
 const Player = mongoose.model('Player', player)
 const Rooms = mongoose.model('Rooms', rooms)
-module.exports = { Rooms, Player }
+const TripleRooms = mongoose.model('TripleRooms', tripleRoom)
+module.exports = { Rooms, Player, TripleRooms }

@@ -4,7 +4,12 @@ let player
 
 if (Cookies.get('apiKey')) {
   const socket = io('http://localhost:3000', {
-    reconnection: false
+  query: 'roomType=2', 
+  transports: ['websocket'], 
+  upgrade: false,
+  reconnection: false, 
+  pingTimeout: 60000000,
+  pingInterval: 25000000
   })
   if (Cookies.get('roomId')) {
     alert('recovery last game')
@@ -15,9 +20,8 @@ if (Cookies.get('apiKey')) {
   } else {
     socket.emit('authentication', { 'apiKey': Cookies.get('apiKey') })
   }
-  socket.on('messeage', (data) => {
-    debugger
-    servicesMesseage(data)
+  socket.on('message', (data) => {
+    servicesMessage(data)
   })
 
   socket.on('playerId', (playerId) => {
@@ -25,17 +29,16 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('updateUserField', (arr, turn) => {
-    debugger
     servicesRenderUserField(arr, turn)
   })
 
-  socket.on('userRecovery', (data) => {
-    cleanAll()
-    renderGamePage()
-    servicesRenderUserField(data.playerField, data.turn, data.superWeapon)
-    document.getElementById('enemy').children[1].innerHTML = ''
-    renderField('enemy', document.getElementById('enemy').children[1], data.enemyField)
-  })
+  // socket.on('userRecovery', (data) => {
+  //   cleanAll()
+  //   renderGamePage()
+  //   servicesRenderUserField(data.playerField, data.turn, data.superWeapon)
+  //   document.getElementById('enemy').children[1].innerHTML = ''
+  //   renderField('enemy', document.getElementById('enemy').children[1], data.enemyField)
+  // })
 
   socket.on('letsBattle', () => {
     setTimeout(() => {
