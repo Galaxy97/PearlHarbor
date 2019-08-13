@@ -22,12 +22,10 @@ const authenticate = (req, res, next) => {
     })
 }
 
-const updateRoom = (roomId, player2, player2socketId, player2apiKey, close) => {
+const updateRoom = (roomId, player, close) => {
   Room.updateOne({ roomId: roomId },
     {
-      player2: player2,
-      player2socketId: player2socketId,
-      player2apiKey: player2apiKey,
+      $push: { players: player },
       isClose: close
     },
     { multi: false }, function (err) {
@@ -59,27 +57,26 @@ const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; pl
     })
 }
 
-const getGameRoom = (roomId) => {
+const getRoom = (roomId) => {
   return Room.findOne({ roomId: roomId })
 }
 
-const createNewRoom = (roomId, player1, player1apiKey, player1socketId) => {
+const createNewRoom = (roomId, player, typeRoom) => {
   Room.create({
     roomId: roomId,
     isFirstPlayerTurn: true,
-    player1: player1,
-    player2: null,
-    player1socketId: player1socketId,
-    player2socketId: null,
-    player1apiKey: player1apiKey,
-    player2apiKey: null,
-    isClose: false
+    players: [player],
+    typeOfRoom: typeRoom,
+    isClose: false,
+    winnerApiKey: null
   })
 }
 
-const createNewPlayer = (perks) => {
+const createNewPlayer = (socketId, apiKey, perks) => {
   const data = generateFields()
   return new Player({
+    socketId: socketId,
+    apiKey: apiKey,
     matrix: data.matrix,
     ships: data.ships,
     shipsStatus: data.shipsStatus,
@@ -88,8 +85,8 @@ const createNewPlayer = (perks) => {
   })
 }
 
-const findFreeRoom = () => {
-  return Room.findOne({ isClose: false })
+const findFreeRoom = (typeRoom) => {
+  return Room.findOne({ isClose: false, typeOfRoom: parseInt(typeRoom, 10) })
 }
 
 const getPlayerInfo = (apiKey) => {
@@ -103,6 +100,6 @@ module.exports = {
   createNewPlayer,
   findFreeRoom,
   getPlayerInfo,
-  getGameRoom,
+  getRoom,
   updateSocketId
 }

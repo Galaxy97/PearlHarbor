@@ -1,12 +1,7 @@
-const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
-
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
-const updateBase = require('./../routs/user/services').updateBase
-const saveToDataBase = require('./../routs/game/services').saveToDataBase
 const createNewRoom = require('../routs/game/services').createNewRoom
-const Room = require('./../routs/game/models/roomsmodel').Rooms
 
 const services = {
   game: require('./../routs/game/services'),
@@ -178,7 +173,7 @@ module.exports = (io) => {
   })
 }
 
-function battle(io, roomId, socket, player, player2Info, apiKey) {
+function battle (io, roomId, socket, player, player2Info, apiKey) {
   services.game.updateRoom(roomId, player, socket.id, apiKey, true) // close this room for new connections
   const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
   socket.broadcast.to(arr[0]).emit('enemyInfo', player2Info)

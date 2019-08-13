@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 mongoose.set('useCreateIndex', true)
 
 const player = mongoose.Schema({
+  socketId: {
+    type: String,
+    require: true
+  },
+  apiKey: {
+    type: String,
+    require: true
+  },
   matrix: {
     type: [[Number]],
     require: true
@@ -29,32 +37,16 @@ const rooms = mongoose.Schema({
     type: String,
     require: true
   },
-  isFirstPlayerTurn: {
-    type: Boolean,
+  indexOfCurrentPlayer: {
+    type: Number,
     require: true
   },
-  player1: {
-    type: player,
+  players: {
+    type: [player],
     require: true
   },
-  player2: {
-    type: player,
-    require: true
-  },
-  player1socketId: {
-    type: String,
-    require: true
-  },
-  player2socketId: {
-    type: String,
-    require: true
-  },
-  player1apiKey: {
-    type: String,
-    require: true
-  },
-  player2apiKey: {
-    type: String,
+  typeOfRoom: {
+    type: Number,
     require: true
   },
   isClose: {
@@ -69,7 +61,8 @@ const rooms = mongoose.Schema({
     type: Date,
     require: true
   }
-})
+},
+{ timestamps: { createdAt: 'createdAt' } })
 
 const Player = mongoose.model('Player', player)
 const Rooms = mongoose.model('Rooms', rooms)
