@@ -12,23 +12,19 @@ module.exports = (io) => {
       socket.on('getUserField', (apiKey, roomId) => {
         services.game.getRoom(roomId)
           .then((roomData) => {
-            try {
-              const player = roomData.players.find(o => o.apiKey === apiKey) // search player info
-              const index = roomData.players.indexOf(player)
-              console.log(index)
-              roomData.players[index].socketId = socket.id
-              roomData.markModified(`players`)
-              roomData.save()
-                .then(() => {
-                  console.log('ok')
-                })
-                .catch((err) => {
-                  console.log(err)
-                })
-              socket.emit('userField', player, roomData.indexOfCurrentPlayer)
-            } catch (err) {
-              console.log(err)
-            }
+            const player = roomData.players.find(o => o.apiKey === apiKey) // search player info
+            const index = roomData.players.indexOf(player)
+            console.log(index)
+            roomData.players[index].socketId = socket.id
+            roomData.markModified(`players`)
+            roomData.save()
+              .then(() => {
+                console.log('ok')
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+            socket.emit('userField', player, roomData.indexOfCurrentPlayer)
           })
           .catch((e) => {
           })
@@ -40,12 +36,14 @@ module.exports = (io) => {
               if (data.option) {
                 room.players[room.indexOfCurrentPlayer].superWeapon.splice(room.players[room.indexOfCurrentPlayer].superWeapon.indexOf(data.option), 1)
               }
-              let player2 = room.indexOfCurrentPlayer + 1
-              if (room.indexOfCurrentPlayer === room.typeOfRoom - 1) {
+              const player1 = room.indexOfCurrentPlayer
+              let player2 = player1 + 1
+              if (player1 === room.typeOfRoom - 1) {
                 player2 = 0
               }
-              if (!checkHit(data.idX, data.idY, room.players[room.indexOfCurrentPlayer], room.players[player2], data.option)) {
-                if (room.indexOfCurrentPlayer === room.typeOfRoom - 1) {
+              if (!checkHit(data.idX, data.idY, room.players[player1], room.players[player2], data.option)) {
+
+                if (room.indexOfCurrentPlayer + 1 === room.typeOfRoom) {
                   room.indexOfCurrentPlayer = 0
                 } else {
                   room.indexOfCurrentPlayer++
@@ -59,27 +57,12 @@ module.exports = (io) => {
               room.save()
                 .then(() => {
                   console.log('ok')
-                  socket.emit('shotResult', (room.player[room.indexOfCurrentPlayer].enemyField, room.indexOfCurrentPlayer))
-                  socket.broadcast.to(room.players[player2].socketId).emit('allPlayersInfo', room.players[player2].matrix)
+                  socket.emit('shotResult', room.players[player1])
+                  socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2])
                 })
                 .catch((err) => {
                   console.log(err)
                 })
-              for (let i = 0; i < 10; i++) {
-                let temp = ''
-                for (let j = 0; j < 10; j++) {
-                  temp += room.players[room.indexOfCurrentPlayer].enemyField[i][j]
-                }
-                console.log(temp)
-              }
-              console.log('\n\n\n')
-              for (let i = 0; i < 10; i++) {
-                let temp = ''
-                for (let j = 0; j < 10; j++) {
-                  temp += room.players[player2].matrix[i][j]
-                }
-                console.log(temp)
-              }
             } else {
               console.log('bad click')
             }
