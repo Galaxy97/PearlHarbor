@@ -1,8 +1,8 @@
-function servicesCreateEnemyField(){
+function servicesCreateEnemyField() {
   const div = document.createElement('div')
   div.id = 'enemy'
   const title = document.createElement('h3')
-  title.innerText = 'Enemy field' 
+  title.innerText = 'Enemy field'
   const body = document.createElement('div')
   const weapon = document.createElement('div')
   div.appendChild(title)
@@ -11,19 +11,37 @@ function servicesCreateEnemyField(){
   document.getElementById('grid').appendChild(div)
 }
 
-function servicesRenderUserField(arr, weapons) {
+function servicesRenderUserField(arr, weapons, ships) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
   renderField('user', document.getElementById('user'), arr)
   if (weapons !== undefined) {
     const ul = document.createElement('ul')
-      weapons.forEach((element) => {
-        const btn = document.createElement('li')
-        btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
-        ul.appendChild(btn)
-      })
-      document.getElementById('enemy').children[2].innerHTML = ''
-      document.getElementById('enemy').children[2].appendChild(ul)
-    }
+    weapons.forEach((element) => {
+      const btn = document.createElement('li')
+      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+      ul.appendChild(btn)
+    })
+    document.getElementById('enemy').children[2].innerHTML = ''
+    document.getElementById('enemy').children[2].appendChild(ul)
+  }
+  renderShips(document.getElementById('shipsUser'), ships)
+}
+
+function renderShips(obj, ships) {
+  obj.innerHTML = ''
+  const table = document.createElement('table')
+  ships.forEach(element => {
+    const tr = document.createElement('tr')
+    element.forEach(chunk => {
+      const td = document.createElement('td')
+      let classbtn
+      !chunk[2] ? classbtn = 'btnChunkShip' : classbtn = 'btnKill'
+      td.innerHTML = `<input type="button" class="${classbtn}">`
+      tr.appendChild(td)
+    })
+  table.appendChild(tr)  
+  })
+  obj.appendChild(table)
 }
 
 function servicesShotResult(arr) {
@@ -91,6 +109,7 @@ function servicesCheckButton(socket, x, y) {
     roomId: Cookies.get('roomId'),
     idX: x,
     idY: y,
+    option: option
   })
   option = undefined
 }
