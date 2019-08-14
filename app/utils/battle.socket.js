@@ -8,16 +8,19 @@ module.exports = (io) => {
     .of('/battle')
     .on('connection', function (socket) {
 
-      socket.on('userField', (apiKey, roomId) => {
+      socket.on('getUserField', (apiKey, roomId) => {
         services.game.getRoom(roomId)
           .then((roomData) => {
-            const player = (apiKey) => room.Players.find(player => {
-              return player.apiKey === apiKey
-            })
+            const player = roomData.players.find(o => o.apiKey === apiKey) // search player info
+            socket.emit('userField', player, roomData.indexOfCurrentPlayer)
           })
           .catch((e) => {
-
           })
+      })
+
+      socket.on('shot', (shotInfo) => {
+        socket.emit('shotResult', (plater.enemyField, indexOfCurrentPlayer))
+        socket.broadcast.to(element.socketId).emit('allPlayersInfo', data)
       })
 
       console.log('successful connection to ', socket.id)

@@ -2,19 +2,91 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Battle</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Battle</title>
+  <style>
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      display: inline;
+    }
+
+    #user {
+      width: 30%;
+      float: left;
+      margin-left: 150px;
+    }
+
+    #enemy {
+      width: 30%;
+      float: left;
+      margin-left: 150px;
+    }
+
+    .button {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .btnEmpty {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/empty.jpg) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnChunkShip {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/chunkShip.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnLosser {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/losser.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnKill {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/kill.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
 </head>
 
 <body>
-
-    Battle
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="/game/scripts/client.battle.js"></script>
+  <header>
+    <h1> Sea Battle</h1>
+    <hr>
+  </header>
+  <div class="content">
+    <div id="user">
+      
+    </div>
+    <div id="enemy">
+      
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/game/scripts/client.battle.js"></script>
+  <script src="/game/scripts/client.services.js"></script>
 </body>
 
 </html>

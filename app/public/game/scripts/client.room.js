@@ -10,12 +10,13 @@ socket.emit('authentication', {
 })
 
 socket.on('message', (data) => {
-  alert('see console')
+  console.log('see console')
+  Cookies.set('roomId', data.id) // id is roomId
   console.log(data)
 })
 
 socket.on('allPlayersInfo', (data) => {
-  alert('allPlayersInfo see console')
+  console.log('allPlayersInfo see console')
   console.log(data)
 })
 

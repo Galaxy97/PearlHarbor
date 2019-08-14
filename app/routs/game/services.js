@@ -64,7 +64,7 @@ const getRoom = (roomId) => {
 const createNewRoom = (roomId, player, typeRoom) => {
   Room.create({
     roomId: roomId,
-    isFirstPlayerTurn: true,
+    indexOfCurrentPlayer: 0,
     players: [player],
     typeOfRoom: typeRoom,
     isClose: false,
