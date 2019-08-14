@@ -14,7 +14,7 @@ function servicesMessage(data) {
   Cookies.set('roomId', data.roomId, { expires: 0.01 })
 }
 
-function servicesRenderUserField(arr, turn, weapons) {
+function servicesRenderUserField(arr, weapons) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
   // if (turn) {
   //   document.getElementById('arrow').className = 'arrowRight'
@@ -33,7 +33,7 @@ function servicesRenderUserField(arr, turn, weapons) {
   }
 }
 
-function servicesShotResult(arr, turn) {
+function servicesShotResult(arr) {
   document.getElementById('enemy').innerHTML = ''
   // if (turn) {
   //   document.getElementById('arrow').className = 'arrowRight'

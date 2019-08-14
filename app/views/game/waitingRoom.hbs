@@ -6,10 +6,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Waiting roon</title>
+  <style>
+    body {
+      background: url(https://www.mobygames.com/images/promo/original/a5e9f93eaf60472abc77b5e6ff3bbe02.jpg)
+    }
+
+    h1 {
+      font-size: 75px;
+      text-align: center;
+    }
+
+    #grid {
+      margin-top: 75px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+      grid-gap: 2vw;
+    }
+
+    #grid>div {
+      font-size: 40px;
+      padding: .5em;
+      background: rgba(241, 219, 153, 0.15);
+      text-align: center;
+    }
+
+    .content {
+      margin: 0 auto;
+      width: 70%;
+    }
+  </style>
 </head>
 
 <body>
-  Waiting
+  <header>
+    <h1>Waiting room</h1>
+    <hr>
+  </header>
+  <div class="content">
+    <div id="grid">
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

@@ -7,6 +7,9 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Battle</title>
   <style>
+    body {
+      background: url(https://3dnews.ru/assets/external/illustrations/2019/03/30/985018/Anno1800_screen.jpg)
+    }
     ul {
       list-style-type: none;
       margin: 0;
@@ -66,6 +69,20 @@
       cursor: pointer;
       border: none;
     }
+
+    #grid {
+      margin-top: 75px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+      grid-gap: 2vw;
+    }
+
+    #grid>div {
+      font-size: 40px;
+      padding: .5em;
+      background: rgba(241, 219, 153, 0.15);
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -76,7 +93,7 @@
   </header>
   <div class="content">
     <div id="user">
-      
+      <h3>My field</h3>      
     </div>
     <div id="enemy">
       
