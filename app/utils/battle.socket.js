@@ -49,10 +49,6 @@ module.exports = (io) => {
                   room.indexOfCurrentPlayer++
                 }
               }
-              for (let i = 0; i < room.players[0].shipsStatus.length; i++) {
-                room.players[0].shipsStatus[i] = true
-                // room.players[1].shipsStatus[i] = true
-              }
               if (isFinishGame(room)) {
                 console.log('won')
                 for (let i = 0; i < room.players.length; i++) {
@@ -80,7 +76,6 @@ module.exports = (io) => {
           .catch((e) => {
             console.log(e)
           })
-        // console.log('successful connection to ', socket.id)
         socket.on('disconnect', function () {
           console.log('Unconnection <--', socket.id)
         })
