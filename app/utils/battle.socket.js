@@ -25,7 +25,7 @@ module.exports = (io) => {
               .catch((err) => {
                 console.log(err)
               })
-            socket.emit('userField', player, roomData.indexOfCurrentPlayer)
+            socket.emit('userField', player, roomData.players.length)
           })
           .catch((e) => {
           })

@@ -1,55 +1,34 @@
-function servicesMessage(data) {
-  /*const playerInfo = document.getElementById('playerInfo')
-  if (data.hasOwnProperty('player2Info')) {
-    const enemyInfo = document.getElementById('enemyInfo')
-    playerInfo.innerHTML = renderInfo(data.player1Info)
-    enemyInfo.innerHTML = renderInfo(data.player2Info)
-    yourTurn = data.yourTurn
-  } else {
-    yourTurn = data.yourTurn
-    playerInfo.innerHTML = renderInfo(data.player1Info)
-  }*/
-  roomId = data.roomId
-  player = data.player
-  Cookies.set('roomId', data.roomId, { expires: 0.01 })
+function servicesCreateEnemyField(){
+  const div = document.createElement('div')
+  div.id = 'enemy'
+  const title = document.createElement('h3')
+  title.innerText = 'Enemy field' 
+  const body = document.createElement('div')
+  const weapon = document.createElement('div')
+  div.appendChild(title)
+  div.appendChild(body)
+  div.appendChild(weapon)
+  document.getElementById('grid').appendChild(div)
 }
 
 function servicesRenderUserField(arr, weapons) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
-  // if (turn) {
-  //   document.getElementById('arrow').className = 'arrowRight'
-  // } else {
-  //   document.getElementById('arrow').className = 'arrowLeft'
-  // }
   renderField('user', document.getElementById('user'), arr)
   if (weapons !== undefined) {
-  const ul = document.createElement('ul')
-    weapons.forEach((element) => {
-      const btn = document.createElement('li')
-      btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
-      ul.appendChild(btn)
-    })
-    document.getElementById('enemy').appendChild(ul)
-  }
+    const ul = document.createElement('ul')
+      weapons.forEach((element) => {
+        const btn = document.createElement('li')
+        btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
+        ul.appendChild(btn)
+      })
+      document.getElementById('enemy').children[2].innerHTML = ''
+      document.getElementById('enemy').children[2].appendChild(ul)
+    }
 }
 
 function servicesShotResult(arr) {
-  document.getElementById('enemy').innerHTML = ''
-  // if (turn) {
-  //   document.getElementById('arrow').className = 'arrowRight'
-  // } else {
-  //   document.getElementById('arrow').className = 'arrowLeft'
-  // }
-  renderField('enemy', document.getElementById('enemy'), arr)
-}
-
-function renderInfo(data) {
-  return `
-  <p> User name : <strong>${data.name}</strong> </p>
-  <p> Sessions played : <strong>${data.sessions}</strong> </p>
-  <p> Wins : <strong>${data.wins}</strong> </p>
-  <p> Last played : <strong>${new Date(data.lastPlayDate).toLocaleString()}</strong> </p>
-`
+  document.getElementById('enemy').children[1].innerHTML = ''
+  renderField('enemy', document.getElementById('enemy').children[1], arr)
 }
 
 function cleanAll() {
@@ -118,6 +97,7 @@ function servicesCheckButton(socket, x, y) {
 
 function renderField(type, obj, arr) {
   const table = document.createElement('table')
+  table.align = 'center'
   for (let i = 0; i < 10; i++) {
     const tr = document.createElement('tr')
     for (let j = 0; j < 10; j++) {
