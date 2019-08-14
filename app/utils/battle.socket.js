@@ -16,6 +16,7 @@ module.exports = (io) => {
             const index = roomData.players.indexOf(player)
             console.log(index)
             roomData.players[index].socketId = socket.id
+            socket.join(roomId)
             roomData.markModified(`players`)
             roomData.save()
               .then(() => {
@@ -42,21 +43,30 @@ module.exports = (io) => {
                 player2 = 0
               }
               if (!checkHit(data.idX, data.idY, room.players[player1], room.players[player2], data.option)) {
-
                 if (room.indexOfCurrentPlayer + 1 === room.typeOfRoom) {
                   room.indexOfCurrentPlayer = 0
                 } else {
                   room.indexOfCurrentPlayer++
                 }
               }
-              if (isFinishGame(room.players)) {
+              for (let i = 0; i < room.players[0].shipsStatus.length; i++) {
+                room.players[0].shipsStatus[i] = true
+                // room.players[1].shipsStatus[i] = true
+              }
+              if (isFinishGame(room)) {
                 console.log('won')
-                io.to(data.roomId).emit('won', 'lol')
+                for (let i = 0; i < room.players.length; i++) {
+                  if (room.winnerApiKey === room.players[i].apiKey) {
+                    services.user.updateBase(room.players[i], 1)
+                  } else {
+                    services.user.updateBase(room.players[i], 0)
+                  }
+                }
+                io.of('/battle').to(data.roomId).emit('gameOver', room.winnerApiKey)
               }
               room.markModified(`players`)
               room.save()
                 .then(() => {
-                  console.log('ok')
                   socket.emit('shotResult', room.players[player1])
                   socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2])
                 })
@@ -70,7 +80,7 @@ module.exports = (io) => {
           .catch((e) => {
             console.log(e)
           })
-        console.log('successful connection to ', socket.id)
+        // console.log('successful connection to ', socket.id)
         socket.on('disconnect', function () {
           console.log('Unconnection <--', socket.id)
         })

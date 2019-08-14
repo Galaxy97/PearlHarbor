@@ -21,3 +21,9 @@ function checkButton(x, y) {
 socket.on('shotResult', (player) => {
   servicesShotResult(player.enemyField)
 })
+
+socket.on('gameOver', (message) => {
+  alert('GG! ' + message)
+  location.replace('/')
+})
+
