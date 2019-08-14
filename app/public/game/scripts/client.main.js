@@ -11,7 +11,7 @@ if (Cookies.get('apiKey')) {
   pingTimeout: 60000000,
   pingInterval: 25000000
   })
-  if (Cookies.get('roomId')) {
+  if (Cookies.get('roomId') && Cookies.get('playerId')) {
     alert('recovery last game')
     socket.emit('recovery', {
       roomId: Cookies.get('roomId'),
@@ -50,7 +50,6 @@ if (Cookies.get('apiKey')) {
   })
 
   socket.on('enemyInfo', (data) => {
-    debugger
     const enemyInfo = document.getElementById('enemyInfo')
     enemyInfo.innerHTML = renderInfo(data)
   })
@@ -64,6 +63,15 @@ if (Cookies.get('apiKey')) {
     Cookies.remove('playerId')
     alert('Game finished! Player ' + name + ' won')
     location.replace('/')
+  })
+
+  socket.on('disconnect', (reason) => {
+    if (reason === 'io server disconnect') {
+      alert('disconnection. Try to reconnect automatly')
+      Cookies.remove('roomId')
+      Cookies.remove('playerId')
+      location.reload()
+    }
   })
 
   function checkButton(x, y, object) {

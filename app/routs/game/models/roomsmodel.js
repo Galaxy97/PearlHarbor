@@ -41,7 +41,7 @@ const rooms = mongoose.Schema({
     type: Number,
     require: true
   },
-  Players: {
+  players: {
     type: [player],
     require: true
   },
@@ -63,66 +63,6 @@ const rooms = mongoose.Schema({
   }
 })
 
-const tripleRoom = mongoose.Schema({
-  roomId: {
-    type: String,
-    require: true
-  },
-  isFirstPlayerTurn: {
-    type: Boolean,
-    require: true
-  },
-  player1: {
-    type: player,
-    require: true
-  },
-  player2: {
-    type: player,
-    require: true
-  },
-  player3: {
-    type: player,
-    require: true
-  },
-  player1socketId: {
-    type: String,
-    require: true
-  },
-  player2socketId: {
-    type: String,
-    require: true
-  },
-  player3socketId: {
-    type: String,
-    require: true
-  },
-  player1apiKey: {
-    type: String,
-    require: true
-  },
-  player2apiKey: {
-    type: String,
-    require: true
-  },
-  player3apiKey: {
-    type: String,
-    require: true
-  },
-  isClose: {
-    type: Boolean,
-    require: false
-  },
-  winnerApiKey: {
-    type: String,
-    require: false
-  },
-  createdAt: {
-    type: Date,
-    require: true
-  }
-})
-
 const Player = mongoose.model('Player', player)
 const Rooms = mongoose.model('Rooms', rooms)
-const TripleRooms = mongoose.model('TripleRooms', tripleRoom)
-module.exports = { Rooms, Player, TripleRooms }
+module.exports = { Rooms, Player }

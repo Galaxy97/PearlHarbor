@@ -25,8 +25,8 @@ const authenticate = (req, res, next) => {
 const updateRoom = (roomId, player, close) => {
   Room.updateOne({ roomId: roomId },
     {
-      isClose: close,
-      $push: { Players: player }
+      $push: { players: player },
+      isClose: close
     },
     { multi: false }, function (err) {
       if (err) {
@@ -57,21 +57,22 @@ const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; pl
     })
 }
 
-const getGameRoom = (roomId) => {
+const getRoom = (roomId) => {
   return Room.findOne({ roomId: roomId })
 }
 
-const createNewRoom = (roomId, player, typeOfRoom) => {
+const createNewRoom = (roomId, player, typeRoom) => {
   Room.create({
     roomId: roomId,
     indexOfCurrentPlayer: 0,
-    Players: [player],
-    typeOfRoom: typeOfRoom,
-    isClose: false
+    players: [player],
+    typeOfRoom: typeRoom,
+    isClose: false,
+    winnerApiKey: null
   })
 }
 
-const createNewPlayer = (perks, socketId, apiKey) => {
+const createNewPlayer = (socketId, apiKey, perks) => {
   const data = generateFields()
   return new Player({
     socketId: socketId,
@@ -92,13 +93,9 @@ const getPlayerInfo = (apiKey) => {
   return User.findOne({ apiKey: apiKey })
 }
 
-const isPlayer = (room, socket) => room.Players.find(player => {
-  return player.socketId === socket
-})
-
 const checkTurn = (room, socket, turn) => {
-  const foundUser = isPlayer(room, socket)
-  const index = room.Players.indexOf(foundUser)
+  const foundUser = room.players.find(o => o.socketId === socket)
+  const index = room.players.indexOf(foundUser)
   if (index === turn) {
     return true
   } else {
@@ -113,7 +110,7 @@ module.exports = {
   createNewPlayer,
   findFreeRoom,
   getPlayerInfo,
-  getGameRoom,
+  getRoom,
   updateSocketId,
   checkTurn
 }

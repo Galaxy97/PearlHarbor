@@ -1,10 +1,6 @@
-const User = require('../routs/user/models/usermodel')
 const uuidv4 = require('uuid/v4')
-
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
-const updateBase = require('./../routs/user/services').updateBase
-const saveToDataBase = require('./../routs/game/services').saveToDataBase
 const createNewRoom = require('../routs/game/services').createNewRoom
 
 const services = {
@@ -15,30 +11,60 @@ const services = {
 module.exports = (io) => {
   io.sockets.on('connection', function (socket) {
     socket.on('authentication', (data) => {
-      User.findOne(
-        {
-          apiKey: data.apiKey
-        })
+      services.game.getPlayerInfo(data.apiKey)
         .then((user) => {
           const roomType = Number(socket.handshake.query.roomType)
           services.game.findFreeRoom(roomType)
             .then((roomData) => {
               if (roomData) {
-                socket.join(roomData.roomId)
-                const player = services.game.createNewPlayer(user.perks, socket.id, data.apiKey)
-                const room = {
-                  roomId: roomData.roomId,
-                  yourTurn: true,
-                  player: player
-                }
-                socket.emit('message', room)
-                if (roomData.Players.length === roomType - 1) {
-                  services.game.updateRoom(roomData.roomId, player, true)
-                  battle(io, roomData.roomId)
+                if (data.apiKey === roomData.player1apiKey) {
+                  services.game.getPlayerInfo(roomData.player1apiKey) // call to database
+                    .then((info) => {
+                      console.log('infoooo', info)
+                      socket.emit('message', {
+                        yourTurn: roomData.isFirstPlayerTurn,
+                        roomId: roomData.roomId,
+                        player1Info: info,
+                        player: roomData.player1
+                      }) // send playerInfo
+                      // io.sockets.connected[roomData.player1socketId].leave(roomData.roomId)
+                      socket.join(roomData.roomId)
+                      services.game.updateSocketId(roomData.roomId, socket.id, true) // player1 = true ; player2 = false
+                    })
+                    .catch((e) => {
+                      console.log(e)
+                    })
                 } else {
-                  services.game.updateRoom(roomData.roomId, player, false)
+                  // if free room is exsist this player 2 and start game
+                  socket.join(roomData.roomId)
+                  const player = services.game.createNewPlayer(user.perks)
+                  const room = {
+                    roomId: roomData.roomId,
+                    yourTurn: false,
+                    player: player, // fiels for game player 2
+                    player2Info: {
+                      apiKey: data.apiKey,
+                      name: user.name,
+                      sessions: user.sessions,
+                      wins: user.wins,
+                      lastPlayDate: user.updatedAt
+                    }
+                  }
+                  services.game.getPlayerInfo(roomData.player1apiKey) // call to database
+                    .then((info) => {
+                      // console.log('infoooo', info)
+                      room.player1Info = info
+                      socket.emit('messeage', room) // send playerInfo
+                      // socket.emit('enemyInfo', info) // send playerInfo
+                      socket.join(roomData.roomId)
+                      battle(io, roomData.roomId, socket, player, room.player2Info, data.apiKey)
+                    })
+                    .catch((e) => {
+                      console.log(e)
+                    })
                 }
-              } else {
+              } else { // this player 1
+                // create new room
                 const roomId = uuidv4()
                 const player = services.game.createNewPlayer(user.perks, socket.id, data.apiKey)
                 createNewRoom(roomId, player, roomType)
@@ -87,46 +113,8 @@ module.exports = (io) => {
     //   socket.emit('playerId', socket.id)
     // })
 
-    socket.on('shot', (data) => {
-      services.game.getGameRoom(data.roomId)
-        .then((room) => {
-          if (services.game.checkTurn(room, socket.id, room.indexOfCurrentPlayer)) {
-            if (data.option) {
-              room.Players[room.indexOfCurrentPlayer].superWeapon.splice(room.Players[room.indexOfCurrentPlayer].superWeapon.indexOf(data.option), 1)
-            }
-            let player2 = room.indexOfCurrentPlayer + 1
-            if (room.indexOfCurrentPlayer === room.typeOfRoom - 1) {
-              player2 = 0
-            }
-            if (!checkHit(data.idX, data.idY, room.Players[room.indexOfCurrentPlayer], room.Players[player2], data.option)) {
-              if (room.indexOfCurrentPlayer === room.typeOfRoom - 1) {
-                room.indexOfCurrentPlayer = 0
-              } else {
-                room.indexOfCurrentPlayer++
-              }
-            }
-            if (isFinishGame(room.Players)) {
-              console.log('won')
-              io.to(data.roomId).emit('won', 'lol')
-            }
-            room.markModified(`Players`)
-            room.save()
-              .then(() => {
-                console.log('ok')
-              })
-              .catch((err) => {
-                console.log(err)
-              })
-            socket.emit('shotResult', room.Players[room.indexOfCurrentPlayer].enemyField, room.indexOfCurrentPlayer)
-            socket.broadcast.to(room.Players[player2].socketId).emit('updateUserField', room.Players[player2].matrix, room.indexOfCurrentPlayer)
-          } else {
-            console.log('bad click')
-          }
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-    })
+    // socket.on('shot', (data) => {
+    // })
 
     console.log('successful connection to socket', socket.id)
     socket.on('disconnect', function () {
@@ -135,6 +123,12 @@ module.exports = (io) => {
   })
 }
 
-function battle (io, roomId) {
+function battle (io, roomId, socket, player, player2Info, apiKey) {
+  services.game.updateRoom(roomId, player, socket.id, apiKey, true) // close this room for new connections
+  const arr = Object.keys(socket.adapter.rooms[roomId].sockets)
+  socket.broadcast.to(arr[0]).emit('enemyInfo', player2Info)
+  socket.broadcast.to(arr[0]).emit('playerId', arr[0]) // arr[0] = socket.id player 1
+  socket.emit('playerId', arr[1]) // arr[1] = socket.id player 2
+
   io.to(roomId).emit('letsBattle')
 }

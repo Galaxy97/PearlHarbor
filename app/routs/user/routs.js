@@ -23,6 +23,10 @@ router.get('/', services.authenticate, (req, res, next) => {
   res.render('user/index', { path: { two: '/game/twoPlayers', three: '/game/threePlayers' } })
 })
 
+router.get('/room', services.authenticate, (req, res, next) => {
+  res.render('game/waitingRoom')
+})
+
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
   services.signupFunc(req, res, next)
 })

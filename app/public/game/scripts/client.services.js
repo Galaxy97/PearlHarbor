@@ -16,11 +16,11 @@ function servicesMessage(data) {
 
 function servicesRenderUserField(arr, turn, weapons) {
   document.getElementById('user').innerHTML = '<h2>My field</h2>'
-  if (turn) {
-    document.getElementById('arrow').className = 'arrowRight'
-  } else {
-    document.getElementById('arrow').className = 'arrowLeft'
-  }
+  // if (turn) {
+  //   document.getElementById('arrow').className = 'arrowRight'
+  // } else {
+  //   document.getElementById('arrow').className = 'arrowLeft'
+  // }
   renderField('user', document.getElementById('user'), arr)
   if (weapons !== undefined) {
   const ul = document.createElement('ul')
@@ -34,13 +34,13 @@ function servicesRenderUserField(arr, turn, weapons) {
 }
 
 function servicesShotResult(arr, turn) {
-  document.getElementById('enemy').children[1].innerHTML = ''
-  if (turn) {
-    document.getElementById('arrow').className = 'arrowRight'
-  } else {
-    document.getElementById('arrow').className = 'arrowLeft'
-  }
-  renderField('enemy', document.getElementById('enemy').children[1], arr)
+  document.getElementById('enemy').innerHTML = ''
+  // if (turn) {
+  //   document.getElementById('arrow').className = 'arrowRight'
+  // } else {
+  //   document.getElementById('arrow').className = 'arrowLeft'
+  // }
+  renderField('enemy', document.getElementById('enemy'), arr)
 }
 
 function renderInfo(data) {
@@ -112,7 +112,6 @@ function servicesCheckButton(socket, x, y) {
     roomId: Cookies.get('roomId'),
     idX: x,
     idY: y,
-    option: option
   })
   option = undefined
 }
