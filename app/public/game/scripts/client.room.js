@@ -18,10 +18,10 @@ socket.on('allPlayersInfo', (data) => {
   servicesCreateFields(data)
 })
 
-// socket.on('letsBattle', () => {
-//   alert('letsBattle')
-//   location.replace('/game/battle')
-// })
+socket.on('letsBattle', () => {
+  alert('letsBattle')
+  location.replace('/game/battle')
+})
 
 function servicesCreateFields(data) {
   const divGrid = document.getElementById('grid')
