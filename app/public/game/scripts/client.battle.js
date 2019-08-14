@@ -16,3 +16,8 @@ function checkButton(x, y) {
 socket.on('shotResult', (data, turn) => {
   servicesShotResult(data, turn)
 })
+
+socket.on('gameOver', (winner) => {
+  alert('GG! ' + winner + ' won')
+  location.replace('/')
+})

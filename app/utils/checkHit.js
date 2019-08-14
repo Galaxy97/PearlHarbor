@@ -106,11 +106,13 @@ function coverArea (ship, enemyField) {
 }
 
 // checking if players have ships yet. If he's not - finishing game
-function isFinishGame (Players) {
+function isFinishGame (room) {
+  let winnerApiKey
   let playerCount = 0
-  for (let i = 0; i < Players.length; i++) {
-    for (let j = 0; j < Players[i].shipsStatus.length; j++) {
-      if (Players[i].shipsStatus[j] === false) {
+  for (let i = 0; i < room.players.length; i++) {
+    for (let j = 0; j < room.players.shipsStatus.length; j++) {
+      if (room.players[i].shipsStatus[j] === false) {
+        winnerApiKey = room.players[i].apiKey
         playerCount++
         return
       }
@@ -119,6 +121,7 @@ function isFinishGame (Players) {
       return false
     }
   }
+  room.winnerApiKey = winnerApiKey
   return true
 }
 

@@ -53,7 +53,7 @@ module.exports = (io) => {
               }
               if (isFinishGame(room.players)) {
                 console.log('won')
-                io.to(data.roomId).emit('won', 'lol')
+                io.to(data.roomId).emit('gameOver', room.winnerApiKey)
               }
               room.markModified(`players`)
               room.save()
