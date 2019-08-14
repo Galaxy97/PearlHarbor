@@ -4,9 +4,13 @@ const socket = io('http://localhost:3000/battle', {
 
 socket.emit('getUserField', Cookies.get('apiKey'), Cookies.get('roomId'))
 
-socket.on('userField', (player) => {
-  servicesRenderUserField(player.matrix)
-  servicesShotResult(player.enemyField, player.superWeapon)
+socket.on('userField', (player, length) => { // length is number of enemy
+  debugger
+  for (let index = 1; index < length; index++) {
+    servicesCreateEnemyField()    
+  }
+  servicesRenderUserField(player.matrix, player.superWeapon)
+  servicesShotResult(player.enemyField)
 })
 
 function checkButton(x, y) {
