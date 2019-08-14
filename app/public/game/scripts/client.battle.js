@@ -5,7 +5,6 @@ const socket = io('http://localhost:3000/battle', {
 socket.emit('getUserField', Cookies.get('apiKey'), Cookies.get('roomId'))
 
 socket.on('userField', (player, length) => { // length is number of enemy
-  debugger
   for (let index = 1; index < length; index++) {
     servicesCreateEnemyField()    
   }
@@ -22,11 +21,7 @@ socket.on('shotResult', (player) => {
 })
 
 socket.on('gameOver', (message) => {
-  debugger
   alert('GG! ' + message)
   location.replace('/')
 })
 
-socket.on('test', () => {
-  alert('test')
-})

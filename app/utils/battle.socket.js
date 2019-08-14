@@ -55,8 +55,14 @@ module.exports = (io) => {
               }
               if (isFinishGame(room)) {
                 console.log('won')
-                io.of('/battle').emit('test')
-                io.of('/battle').to(data.roomId).emit('gameOver')
+                for (let i = 0; i < room.players.length; i++) {
+                  if (room.winnerApiKey === room.players[i].apiKey) {
+                    services.user.updateBase(room.players[i], 1)
+                  } else {
+                    services.user.updateBase(room.players[i], 0)
+                  }
+                }
+                io.of('/battle').to(data.roomId).emit('gameOver', room.winnerApiKey)
               }
               room.markModified(`players`)
               room.save()
@@ -74,7 +80,7 @@ module.exports = (io) => {
           .catch((e) => {
             console.log(e)
           })
-          // console.log('successful connection to ', socket.id)
+        // console.log('successful connection to ', socket.id)
         socket.on('disconnect', function () {
           console.log('Unconnection <--', socket.id)
         })
