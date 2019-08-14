@@ -13,16 +13,15 @@ module.exports = (io) => {
     socket.on('authentication', (data) => {
       services.game.getPlayerInfo(data.apiKey)
         .then((user) => {
-          // find free room
-          services.game.findFreeRoom()
+          const roomType = Number(socket.handshake.query.roomType)
+          services.game.findFreeRoom(roomType)
             .then((roomData) => {
-              console.log('roomData is', roomData)
               if (roomData) {
                 if (data.apiKey === roomData.player1apiKey) {
                   services.game.getPlayerInfo(roomData.player1apiKey) // call to database
                     .then((info) => {
                       console.log('infoooo', info)
-                      socket.emit('messeage', {
+                      socket.emit('message', {
                         yourTurn: roomData.isFirstPlayerTurn,
                         roomId: roomData.roomId,
                         player1Info: info,
@@ -67,22 +66,15 @@ module.exports = (io) => {
               } else { // this player 1
                 // create new room
                 const roomId = uuidv4()
-                const player = services.game.createNewPlayer(user.perks)
+                const player = services.game.createNewPlayer(user.perks, socket.id, data.apiKey)
+                createNewRoom(roomId, player, roomType)
+                socket.join(roomId)
                 const room = {
                   roomId: roomId,
                   yourTurn: true,
-                  player: player, // fiels for game
-                  player1Info: {
-                    apiKey: data.apiKey,
-                    name: user.name,
-                    sessions: user.sessions,
-                    wins: user.wins,
-                    lastPlayDate: user.updatedAt
-                  }
+                  player: player
                 }
-                createNewRoom(roomId, player, data.apiKey, socket.id) // create new room in database
-                socket.join(roomId)
-                socket.emit('messeage', room)
+                socket.emit('message', room)
               }
             })
             .catch((e) => {
@@ -94,77 +86,35 @@ module.exports = (io) => {
         })
     })
 
-    socket.on('recovery', (data) => {
-      services.game.getGameRoom(data.roomId)
-        .then((room) => {
-          if (data.playerId === room.player1socketId) {
-            socket.emit('userRecovery', {
-              playerField: room.player1.matrix,
-              enemyField: room.player1.enemyField,
-              superWeapon: room.player1.superWeapon,
-              turn: room.isFirstPlayerTurn
-            })
-            services.game.updateSocketId(data.roomId, socket.id, true) // player1 = true ; player2 = false
-          } else if (data.playerId === room.player2socketId) {
-            socket.emit('userRecovery', {
-              playerField: room.player2.matrix,
-              enemyField: room.player2.enemyField,
-              superWeapon: room.player2.superWeapon,
-              turn: !room.isFirstPlayerTurn
-            })
-            services.game.updateSocketId(data.roomId, socket.id, false) // player1 = true ; player2 = false
-          }
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-      socket.emit('playerId', socket.id)
-    })
+    // socket.on('recovery', (data) => {
+    //   services.game.getGameRoom(data.roomId)
+    //     .then((room) => {
+    //       if (data.playerId === room.player1socketId) {
+    //         socket.emit('userRecovery', {
+    //           playerField: room.player1.matrix,
+    //           enemyField: room.player1.enemyField,
+    //           superWeapon: room.player1.superWeapon,
+    //           turn: room.isFirstPlayerTurn
+    //         })
+    //         services.game.updateSocketId(data.roomId, socket.id, true) // player1 = true ; player2 = false
+    //       } else if (data.playerId === room.player2socketId) {
+    //         socket.emit('userRecovery', {
+    //           playerField: room.player2.matrix,
+    //           enemyField: room.player2.enemyField,
+    //           superWeapon: room.player2.superWeapon,
+    //           turn: !room.isFirstPlayerTurn
+    //         })
+    //         services.game.updateSocketId(data.roomId, socket.id, false) // player1 = true ; player2 = false
+    //       }
+    //     })
+    //     .catch((e) => {
+    //       console.log(e)
+    //     })
+    //   socket.emit('playerId', socket.id)
+    // })
 
-    socket.on('shot', (data) => {
-      console.log('shot to', data.idX, data.idY)
-      services.game.getGameRoom(data.roomId)
-        .then((room) => {
-          if (socket.id === room.player1socketId && room.isFirstPlayerTurn) {
-            if (data.option) {
-              room.player1.superWeapon.splice(room.player1.superWeapon.indexOf(data.option), 1)
-            }
-            if (!checkHit(data.idX, data.idY, room.player1, room.player2, data.option)) {
-              room.isFirstPlayerTurn = false
-            }
-            if (isFinishGame(room.player2)) {
-              console.log('won')
-              io.to(data.roomId).emit('won', 'lol')
-            }
-            room.markModified('player1')
-            room.markModified('player2')
-            room.save()
-            socket.emit('shotResult', room.player1.enemyField, room.isFirstPlayerTurn)
-            socket.broadcast.to(room.player2socketId).emit('updateUserField', room.player2.matrix, !room.isFirstPlayerTurn)
-          } else if (socket.id === room.player2socketId && !room.isFirstPlayerTurn) {
-            if (data.option) {
-              room.player2.superWeapon.splice(room.player2.superWeapon.indexOf(data.option), 1)
-            }
-            if (!checkHit(data.idX, data.idY, room.player2, room.player1, data.option)) {
-              room.isFirstPlayerTurn = true
-            }
-            if (isFinishGame(room.player1)) {
-              console.log('won')
-              io.to(data.roomId).emit('won', 'lol')
-            }
-            room.markModified('player1')
-            room.markModified('player2')
-            room.save()
-            socket.emit('shotResult', room.player2.enemyField, !room.isFirstPlayerTurn)
-            socket.broadcast.to(room.player1socketId).emit('updateUserField', room.player1.matrix, room.isFirstPlayerTurn)
-          } else {
-            console.log('bad click')
-          }
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-    })
+    // socket.on('shot', (data) => {
+    // })
 
     console.log('successful connection to socket', socket.id)
     socket.on('disconnect', function () {

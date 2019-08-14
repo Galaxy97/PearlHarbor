@@ -46,7 +46,7 @@ const checkHit = (x, y, player1, player2, option) => {
     }
   }
   if (option === 'rightDiagonal') {
-    for (let i = 10, j = 0; j < 10 && i > 0; i--, j++) {
+    for (let i = 9, j = 0; j < 10 && i > 0; i--, j++) {
       checkHit(i, j, player1, player2)
     }
   }
@@ -106,9 +106,16 @@ function coverArea (ship, enemyField) {
 }
 
 // checking if players have ships yet. If he's not - finishing game
-function isFinishGame (player) {
-  for (let i = 0; i < player.shipsStatus.length; i++) {
-    if (player.shipsStatus[i] === false) {
+function isFinishGame (Players) {
+  let playerCount = 0
+  for (let i = 0; i < Players.length; i++) {
+    for (let j = 0; j < Players[i].shipsStatus.length; j++) {
+      if (Players[i].shipsStatus[j] === false) {
+        playerCount++
+        return
+      }
+    }
+    if (playerCount === 2) {
       return false
     }
   }

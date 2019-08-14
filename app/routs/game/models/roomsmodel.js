@@ -61,8 +61,7 @@ const rooms = mongoose.Schema({
     type: Date,
     require: true
   }
-},
-{ timestamps: { createdAt: 'createdAt' } })
+})
 
 const Player = mongoose.model('Player', player)
 const Rooms = mongoose.model('Rooms', rooms)

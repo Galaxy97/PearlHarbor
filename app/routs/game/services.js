@@ -85,12 +85,22 @@ const createNewPlayer = (socketId, apiKey, perks) => {
   })
 }
 
-const findFreeRoom = (typeRoom) => {
-  return Room.findOne({ isClose: false, typeOfRoom: parseInt(typeRoom, 10) })
+const findFreeRoom = (type) => {
+  return Room.findOne({ isClose: false, typeOfRoom: type })
 }
 
 const getPlayerInfo = (apiKey) => {
   return User.findOne({ apiKey: apiKey })
+}
+
+const checkTurn = (room, socket, turn) => {
+  const foundUser = room.players.find(o => o.socketId === socket)
+  const index = room.players.indexOf(foundUser)
+  if (index === turn) {
+    return true
+  } else {
+    return false
+  }
 }
 
 module.exports = {
@@ -101,5 +111,6 @@ module.exports = {
   findFreeRoom,
   getPlayerInfo,
   getRoom,
-  updateSocketId
+  updateSocketId,
+  checkTurn
 }

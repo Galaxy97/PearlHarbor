@@ -27,8 +27,6 @@ const getRandomPerk = (req, res, next) => {
   const value = getRandomInt(48)
   if (value === 0) {
     result = 'boundsStrike100'
-  } else if (value === 1) {
-    result = 'rhombStrike'
   } else if (value < 4) {
     result = 'rightDiagonal'
   } else if (value < 7) {

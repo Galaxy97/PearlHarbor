@@ -1,5 +1,5 @@
-function servicesMesseage(data) {
-  const playerInfo = document.getElementById('playerInfo')
+function servicesMessage(data) {
+  /*const playerInfo = document.getElementById('playerInfo')
   if (data.hasOwnProperty('player2Info')) {
     const enemyInfo = document.getElementById('enemyInfo')
     playerInfo.innerHTML = renderInfo(data.player1Info)
@@ -8,7 +8,7 @@ function servicesMesseage(data) {
   } else {
     yourTurn = data.yourTurn
     playerInfo.innerHTML = renderInfo(data.player1Info)
-  }
+  }*/
   roomId = data.roomId
   player = data.player
   Cookies.set('roomId', data.roomId, { expires: 0.01 })
@@ -112,7 +112,6 @@ function servicesCheckButton(socket, x, y) {
     roomId: Cookies.get('roomId'),
     idX: x,
     idY: y,
-    option: option
   })
   option = undefined
 }
