@@ -17,7 +17,12 @@ socket.on('shotResult', (player) => {
   servicesShotResult(player.enemyField, player.superWeapon)
 })
 
-socket.on('gameOver', (winner) => {
-  alert('GG! ' + winner + ' won')
+socket.on('gameOver', (message) => {
+  debugger
+  alert('GG! ' + message)
   location.replace('/')
+})
+
+socket.on('test', () => {
+  alert('test')
 })

@@ -110,11 +110,11 @@ function isFinishGame (room) {
   let winnerApiKey
   let playerCount = 0
   for (let i = 0; i < room.players.length; i++) {
-    for (let j = 0; j < room.players.shipsStatus.length; j++) {
+    for (let j = 0; j < room.players[i].shipsStatus.length; j++) {
       if (room.players[i].shipsStatus[j] === false) {
         winnerApiKey = room.players[i].apiKey
         playerCount++
-        return
+        j = 13
       }
     }
     if (playerCount === 2) {
