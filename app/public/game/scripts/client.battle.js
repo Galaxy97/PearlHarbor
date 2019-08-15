@@ -11,6 +11,9 @@ socket.on('userField', (player, playersApiKey) => { // length is number of enemy
   userApikey = player.apiKey
   playersApiKey.forEach(element => {
     if (userApikey !== element) {
+      if (document.getElementById(element)) {
+        document.getElementById(element).remove()
+      }
       servicesCreateEnemyField(element)
       servicesShotResult(player.enemyField, element)
     }
