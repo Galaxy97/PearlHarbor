@@ -30,7 +30,7 @@ module.exports = (io) => {
           .catch((e) => {
           })
       })
-      socket.on('shot', (data) => {
+      socket.on('shot', (data, player) => {
         services.game.getRoom(data.roomId)
           .then((room) => {
             if (services.game.checkTurn(room, socket.id, room.indexOfCurrentPlayer)) {
@@ -38,10 +38,7 @@ module.exports = (io) => {
                 room.players[room.indexOfCurrentPlayer].superWeapon.splice(room.players[room.indexOfCurrentPlayer].superWeapon.indexOf(data.option), 1)
               }
               const player1 = room.indexOfCurrentPlayer
-              let player2 = player1 + 1
-              if (player1 === room.typeOfRoom - 1) {
-                player2 = 0
-              }
+              const player2 = room.players.indexOf(player)
               if (!checkHit(data.idX, data.idY, room.players[player1], room.players[player2], data.option)) {
                 if (room.indexOfCurrentPlayer + 1 === room.typeOfRoom) {
                   room.indexOfCurrentPlayer = 0
