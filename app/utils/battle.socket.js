@@ -25,11 +25,9 @@ module.exports = (io) => {
               .catch((err) => {
                 console.log(err)
               })
-            const playersApiKey = []
-            roomData.players.forEach(element => {
-              playersApiKey.push(element.apiKey)
-            })
-            socket.emit('userField', player, playersApiKey)
+            socket.emit('userField', player)
+            console.log('roomData.players', roomData.players)
+            socket.emit('renderEnemyFields', roomData.players, player.apiKey)
           })
           .catch((e) => {
           })
@@ -68,8 +66,20 @@ module.exports = (io) => {
                   room.players.forEach(element => {
                     playersApiKey.push(element.apiKey)
                   })
-                  socket.emit('shotResult', room.players[player1], room.players[player2].apiKey)
-                  socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2], playersApiKey)
+                  for (let i = 0; i < room.players.length; i++) {
+                    if (room.players[i].apiKey === room.players[player2].apiKey) {
+                      socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2], playersApiKey)
+                      console.log('userField sent to' + room.players[i].apiKey)
+                    } else {
+                      if (socket.id === room.players[i].socketId) {
+                        socket.emit('shotResult', room.players, room.players[i].apiKey)
+                        console.log('shotResult sent to' + room.players[i].apiKey + ' socket owner')
+                      } else {
+                        socket.broadcast.to(room.players[i].socketId).emit('shotResult', room.players, room.players[i].apiKey)
+                        console.log('shotResult sent to' + room.players[i].apiKey)
+                      }
+                    }
+                  }
                 })
                 .catch((err) => {
                   console.log(err)
