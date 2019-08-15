@@ -1,17 +1,13 @@
 const express = require('express')
 const router = express.Router()
 const services = require('./services')
-const generateField = require('../../utils/randomgamefield').randomize
 
-router.get('/', services.authenticate, (req, res, next) => { // locallost/game
-  res.render('game/game')
+router.get('/battle', (req, res) => { // locallost/game/three-payers
+  res.render('game/battle')
 })
 
-// router.get('/game', (req, res) => {
-//   res.render('game/game')
-// })
-
-router.get('/field', (req, res, next) => {
+router.get('/', (req, res) => { // locallost/game
+  res.redirect('/')
 })
 
 module.exports = router

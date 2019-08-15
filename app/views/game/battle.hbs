@@ -1,12 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Battle</title>
+  <style>
+    body {
+      background: url(https://3dnews.ru/assets/external/illustrations/2019/03/30/985018/Anno1800_screen.jpg)
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .button {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .btnEmpty {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/empty.jpg) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnChunkShip {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/chunkShip.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnLosser {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/losser.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnKill {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/kill.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+      grid-gap: 2vw;
+    }
+
+    #grid>div {
+      font-size: 40px;
+      padding: .5em;
+      background: rgba(241, 219, 153, 0.15);
+      text-align: center;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 7fr 1fr;
+      grid-gap: 2vw;
+    }
+  </style>
 </head>
+
 <body>
-    Battle
+  <header>
+    <h1 align="center"> Sea Battle</h1>
+    <hr>
+  </header>
+  <div class="content">
+    <div id="shipsUser"></div>
+    <div id="grid">
+      <div id="user">
+        <h3>My field</h3>
+      </div>
+    </div>
+    <div id="superWeapon">
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/game/scripts/client.battle.js"></script>
+  <script src="/game/scripts/client.services.js"></script>
 </body>
+
 </html>

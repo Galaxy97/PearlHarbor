@@ -24,10 +24,13 @@ const user = mongoose.Schema({
   apiKey: {
     type: String,
     require: true
+  },
+  perks: {
+    type: [String]
   }
 }, {
   timestamps: { createdAt: 'createdAt' }
 })
 
-var User = mongoose.model('User', user)
+const User = mongoose.model('User', user)
 module.exports = User

@@ -6,6 +6,7 @@ const app = express()
 // const RequestError = require('./errors/RequestError')
 const session = require('express-session')
 const game = require('./routs/game/routs')
+const perks = require('./routs/perks/routs')
 require('./db/database')
 
 app.use(bodyParser.json())
@@ -25,6 +26,7 @@ app.use(express.static('./app/public'))
 
 app.use('/', user)
 app.use('/game', game)
+app.use('/perks', perks)
 
 app.use(function (err, req, res, next) {
   if (err.code !== 500) {
