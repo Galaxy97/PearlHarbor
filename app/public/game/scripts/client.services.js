@@ -1,6 +1,6 @@
-function servicesCreateEnemyField() {
+function servicesCreateEnemyField(id) {
   const div = document.createElement('div')
-  div.id = 'enemy'
+  div.id = id
   const title = document.createElement('h3')
   title.innerText = 'Enemy field'
   const body = document.createElement('div')
@@ -21,8 +21,8 @@ function servicesRenderUserField(arr, weapons, ships) {
       btn.innerHTML = `<button id="${element}-btn" onclick = "superWeapon('${element}')">${element}</button>`
       ul.appendChild(btn)
     })
-    document.getElementById('enemy').children[2].innerHTML = ''
-    document.getElementById('enemy').children[2].appendChild(ul)
+    document.getElementById('superWeapon').innerHTML = ''
+    document.getElementById('superWeapon').appendChild(ul)
   }
   renderShips(document.getElementById('shipsUser'), ships)
 }
@@ -44,58 +44,13 @@ function renderShips(obj, ships) {
   obj.appendChild(table)
 }
 
-function servicesShotResult(arr) {
-  document.getElementById('enemy').children[1].innerHTML = ''
-  renderField('enemy', document.getElementById('enemy').children[1], arr)
+function servicesShotResult(arr, id) {
+  document.getElementById(id).children[1].innerHTML = ''
+  renderField('enemy', document.getElementById(id).children[1], arr, id)
 }
 
 function cleanAll() {
   document.getElementById('content').innerHTML = ''
-}
-
-function renderGamePage() {
-  const divContent = document.getElementById('content')
-  const header = document.createElement('header')
-  header.innerHTML = '<h1> Sea Battle </h1> <hr>'
-  header.style.textAlign = 'center'
-  divContent.appendChild(header)
-
-  const divShipsUser = document.createElement('div')
-  divShipsUser.id = 'shipsUser'
-  divShipsUser.align = 'center'
-  divShipsUser.innerHTML = '<h2>My Ships</h2>'
-  const divUser = document.createElement('div')
-  divUser.id = 'user'
-  divUser.align = 'center'
-  divUser.innerHTML = '<h2>My field</h2>'
-  const divArrow = document.createElement('div')
-  divArrow.id = 'arrow'
-  if (yourTurn) {
-    divArrow.className = 'arrowRight'
-  } else {
-    divArrow.className = 'arrowLeft'
-  }
-  const divShipsEnemy = document.createElement('div')
-  divShipsEnemy.id = 'shipsEnemy'
-  divShipsEnemy.align = 'center'
-  divShipsEnemy.innerHTML = '<h2>Enemy Ships</h2>'
-
-  const divEnemy = document.createElement('div')
-  divEnemy.id = 'enemy'
-  divEnemy.align = 'center'
-  divEnemy.innerHTML = '<h2>Enemy field</h2>'
-
-  const superButtons = document.createElement('div')
-  superButtons.id = 'superButtons'
-  superButtons.align = 'center'
-
-  divContent.appendChild(divShipsUser)
-  divContent.appendChild(divUser)
-  divContent.appendChild(divArrow)
-  divContent.appendChild(divEnemy)
-  divContent.appendChild(divShipsEnemy)
-
-  renderField('default', document.getElementById('enemy'))
 }
 
 function superWeapon(weapon) {
@@ -104,17 +59,18 @@ function superWeapon(weapon) {
   alert('Your will be used super weapon ' + weapon)
 }
 
-function servicesCheckButton(socket, x, y) {
+function servicesCheckButton(socket, x, y, apiKey) {
   socket.emit('shot', {
     roomId: Cookies.get('roomId'),
     idX: x,
     idY: y,
-    option: option
+    option: option,
+    enemyApiKey: apiKey
   })
   option = undefined
 }
 
-function renderField(type, obj, arr) {
+function renderField(type, obj, arr, id) {
   const table = document.createElement('table')
   table.align = 'center'
   for (let i = 0; i < 10; i++) {
@@ -137,7 +93,7 @@ function renderField(type, obj, arr) {
           if (arr[i][j] === 1 || arr[i][j] === 2) {
             td.innerHTML = `<input type="button" class="${classbtn}">`
           } else {
-            td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, this)">`
+            td.innerHTML = `<input type="button" class="${classbtn}" onclick = "checkButton(${i}, ${j}, '${id}')">`
           }
           break
         case 'user':
@@ -157,7 +113,7 @@ function renderField(type, obj, arr) {
           td.innerHTML = `<input type="button" class="${classbtn}">`
           break
         default:
-          td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, this)"></div>`
+          td.innerHTML = `<div class="btnEmpty" onclick ="checkButton(${i}, ${j}, '${id}')"></div>`
           break
       }
       tr.appendChild(td)
