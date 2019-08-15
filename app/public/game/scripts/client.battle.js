@@ -37,10 +37,6 @@ socket.on('shotResult', (players, playerApiKey) => {
   })
 })
 
-socket.on('test', () => {
-  alert('asdasd')
-})
-
 socket.on('gameOver', (message) => {
   alert('GG! ' + message)
   location.replace('/')
