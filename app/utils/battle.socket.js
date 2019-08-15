@@ -25,7 +25,11 @@ module.exports = (io) => {
               .catch((err) => {
                 console.log(err)
               })
-            socket.emit('userField', player, roomData.players.length)
+            const playersApiKey = []
+            roomData.players.forEach(element => {
+              playersApiKey.push(element.apiKey)
+            })
+            socket.emit('userField', player, playersApiKey)
           })
           .catch((e) => {
           })
