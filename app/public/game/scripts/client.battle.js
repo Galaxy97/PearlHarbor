@@ -7,6 +7,7 @@ const socket = io('http://localhost:3000/battle', {
 socket.emit('getUserField', Cookies.get('apiKey'), Cookies.get('roomId'))
 
 socket.on('userField', (player, playersApiKey) => { // length is number of enemy
+  debugger
   userApikey = player.apiKey
   playersApiKey.forEach(element => {
     if (userApikey !== element) {
@@ -21,8 +22,8 @@ function checkButton(x, y, apiKey) {
   servicesCheckButton(socket, x, y, apiKey)
 }
 
-socket.on('shotResult', (player) => {
-  servicesShotResult(player.enemyField, player.apiKey)
+socket.on('shotResult', (player, enemyApiKey) => {
+  servicesShotResult(player.enemyField, enemyApiKey)
 })
 
 socket.on('gameOver', (message) => {

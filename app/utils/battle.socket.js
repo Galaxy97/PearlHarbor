@@ -34,7 +34,7 @@ module.exports = (io) => {
           .catch((e) => {
           })
       })
-      socket.on('shot', (data, player) => {
+      socket.on('shot', (data) => {
         services.game.getRoom(data.roomId)
           .then((room) => {
             if (services.game.checkTurn(room, socket.id, room.indexOfCurrentPlayer)) {
@@ -42,7 +42,7 @@ module.exports = (io) => {
                 room.players[room.indexOfCurrentPlayer].superWeapon.splice(room.players[room.indexOfCurrentPlayer].superWeapon.indexOf(data.option), 1)
               }
               const player1 = room.indexOfCurrentPlayer
-              const player2 = room.players.indexOf(player)
+              const player2 = room.players.indexOf(room.players.find(o => o.apiKey === data.enemyApiKey))
               if (!checkHit(data.idX, data.idY, room.players[player1], room.players[player2], data.option)) {
                 if (room.indexOfCurrentPlayer + 1 === room.typeOfRoom) {
                   room.indexOfCurrentPlayer = 0
@@ -64,8 +64,12 @@ module.exports = (io) => {
               room.markModified(`players`)
               room.save()
                 .then(() => {
-                  socket.emit('shotResult', room.players[player1])
-                  socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2])
+                  const playersApiKey = []
+                  room.players.forEach(element => {
+                    playersApiKey.push(element.apiKey)
+                  })
+                  socket.emit('shotResult', room.players[player1], room.players[player2].apiKey)
+                  socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2], playersApiKey)
                 })
                 .catch((err) => {
                   console.log(err)
