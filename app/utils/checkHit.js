@@ -2,20 +2,20 @@ const checkHit = (x, y, player1, player2, option) => {
   if (option === undefined) {
   // if some ship is hit
     if (player2.matrix[x][y] === 2) {
-      player1.enemyField[x][y] = 2
+      player2.enemyField[x][y] = 2
       player2.matrix[x][y] = 3
       // search the ship that have hit
       const shipIndex = findShipIndex(x, y, player2)
       // check if ship have sank
       if (isSank(player2, shipIndex)) {
         // if it is we're covering area around it with 1's, that means the area is hit
-        coverArea(player2.ships[shipIndex], player1.enemyField)
+        coverArea(player2.ships[shipIndex], player2.enemyField)
         return true
       }
       return true
     } else if (player2.matrix[x][y] !== 3) {
       // if none ship is hit just macking the cell is 1
-      player1.enemyField[x][y] = 1
+      player2.enemyField[x][y] = 1
       player2.matrix[x][y] = 1
       return false
     }
