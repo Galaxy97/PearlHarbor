@@ -87,7 +87,8 @@ module.exports = (io) => {
           .catch((e) => {
             throw e
           })
-        socket.on('disconnect')
+        socket.on('disconnect', function () {
+        })
       })
     })
 }
