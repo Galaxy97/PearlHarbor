@@ -20,3 +20,7 @@ After login/registration player has to chose game room. Connection is made via s
 in database. For saving and retrieving data used mongoose.
 
 Screenshots:
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/menu.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/room.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/game.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/battle.png)
