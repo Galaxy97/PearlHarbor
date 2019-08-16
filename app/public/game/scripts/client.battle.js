@@ -19,7 +19,6 @@ socket.on('whoTurn', turn => {
 })
 
 socket.on('renderEnemyFields',(players, enemyApiKey) => {
-  debugger
   players.forEach(element => {
     if (element.apiKey !== enemyApiKey) {
       if (document.getElementById(element.apiKey)) {
@@ -36,7 +35,6 @@ function checkButton(x, y, apiKey) {
 }
 
 socket.on('shotResult', (players, playerApiKey) => {
-  debugger
   players.forEach( element => {
     if (element.apiKey !== playerApiKey) {
       servicesShotResult(element.enemyField, element.apiKey)

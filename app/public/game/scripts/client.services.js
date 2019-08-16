@@ -45,7 +45,6 @@ function renderShips(obj, ships) {
 }
 
 function servicesShotResult(arr, id) {
-  debugger
   document.getElementById(id).children[1].innerHTML = ''
   renderField('enemy', document.getElementById(id).children[1], arr, id)
 }
