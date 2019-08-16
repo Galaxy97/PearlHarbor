@@ -7,10 +7,6 @@ const config = require('../../config/index')
 
 const router = express.Router()
 
-// router.get('/', (req, res) => {
-//   res.render('user/index', { path: '/game' })
-// })
-
 router.get('/signup', (req, res, next) => {
   res.render('user/signup', { host: config.host, port: config.port })
 })

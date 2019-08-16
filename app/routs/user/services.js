@@ -39,7 +39,6 @@ const signup = (req, res, next) => {
       res.status(200).send('Successfully registered')
     })
     .catch((err) => {
-      console.log('ok')
       return next(new RequestError(400, err))
     })
 }
@@ -64,11 +63,8 @@ const authenticate = (req, res, next) => {
 const update = (user, GameResult) => {
   User.update({ apiKey: user.apiKey },
     { $inc: { wins: GameResult, sessions: 1 } })
-    .then(() => {
-      console.log('ok')
-    })
-    .catch(() => {
-      console.log('not ok')
+    .catch((e) => {
+      throw e
     })
 }
 

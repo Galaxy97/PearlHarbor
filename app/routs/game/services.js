@@ -30,9 +30,8 @@ const updateRoom = (roomId, player, close) => {
     },
     { multi: false }, function (err) {
       if (err) {
-        console.log(err)
+        throw err
       }
-      console.log('succesfull update')
     })
 }
 
@@ -51,9 +50,8 @@ const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; pl
     update,
     { multi: false }, function (err) {
       if (err) {
-        console.log(err)
+        throw err
       }
-      console.log('succesfull update socketID')
     })
 }
 

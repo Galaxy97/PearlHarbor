@@ -70,17 +70,6 @@ const randomize = () => {
       }
     }
   }
-  let string = ''
-  for (let i = 0; i < 10; i++) {
-    let str = ''
-    for (let j = 0; j < 10; j++) {
-      str += (resultMatrix[i][j]) + ' '
-    }
-    string += (str + '\n')
-  }
-  console.log('\n\n\n\n')
-  console.log(string)
-
   const result = {
     matrix: resultMatrix,
     ships: resultShips,

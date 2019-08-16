@@ -7,8 +7,15 @@ const socket = io('http://localhost:3000/battle', {
 socket.emit('getUserField', Cookies.get('apiKey'), Cookies.get('roomId'))
 
 socket.on('userField', (player) => { // length is number of enemy
-  debugger
   servicesRenderUserField(player.matrix, player.superWeapon, player.ships)
+})
+
+socket.on('whoTurn', turn => {
+  if (turn) {
+    document.getElementById('turn').innerText = 'Your turn'
+  } else {
+    document.getElementById('turn').innerText = 'Your DON`T turn'
+  }
 })
 
 socket.on('renderEnemyFields',(players, enemyApiKey) => {

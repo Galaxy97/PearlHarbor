@@ -14,22 +14,18 @@ module.exports = (io) => {
           .then((roomData) => {
             const player = roomData.players.find(o => o.apiKey === apiKey) // search player info
             const index = roomData.players.indexOf(player)
-            console.log(index)
             roomData.players[index].socketId = socket.id
             socket.join(roomId)
             roomData.markModified(`players`)
             roomData.save()
-              .then(() => {
-                console.log('ok')
-              })
-              .catch((err) => {
-                console.log(err)
-              })
             socket.emit('userField', player)
-            console.log('roomData.players', roomData.players)
             socket.emit('renderEnemyFields', roomData.players, player.apiKey)
+            let turn
+            roomData.indexOfCurrentPlayer === index ? turn = true : turn = false
+            socket.emit('whoTurn', turn)
           })
           .catch((e) => {
+            throw e
           })
       })
       socket.on('shot', (data) => {
@@ -49,7 +45,6 @@ module.exports = (io) => {
                 }
               }
               if (isFinishGame(room)) {
-                console.log('won')
                 for (let i = 0; i < room.players.length; i++) {
                   if (room.winnerApiKey === room.players[i].apiKey) {
                     services.user.updateBase(room.players[i], 1)
@@ -69,31 +64,30 @@ module.exports = (io) => {
                   for (let i = 0; i < room.players.length; i++) {
                     if (room.players[i].apiKey === room.players[player2].apiKey) {
                       socket.broadcast.to(room.players[player2].socketId).emit('userField', room.players[player2], playersApiKey)
-                      console.log('userField sent to' + room.players[i].apiKey)
+                      let turn
+                      room.indexOfCurrentPlayer === i ? turn = true : turn = false
+                      socket.broadcast.to(room.players[player2].socketId).emit('whoTurn', turn)
                     } else {
                       if (socket.id === room.players[i].socketId) {
                         socket.emit('shotResult', room.players, room.players[i].apiKey)
-                        console.log('shotResult sent to' + room.players[i].apiKey + ' socket owner')
+                        let turn
+                        room.indexOfCurrentPlayer === i ? turn = true : turn = false
+                        socket.emit('whoTurn', turn)
                       } else {
                         socket.broadcast.to(room.players[i].socketId).emit('shotResult', room.players, room.players[i].apiKey)
-                        console.log('shotResult sent to' + room.players[i].apiKey)
+                        let turn
+                        room.indexOfCurrentPlayer === i ? turn = true : turn = false
+                        socket.broadcast.to(room.players[i].socketId).emit('whoTurn', turn)
                       }
                     }
                   }
                 })
-                .catch((err) => {
-                  console.log(err)
-                })
-            } else {
-              console.log('bad click')
             }
           })
           .catch((e) => {
-            console.log(e)
+            throw e
           })
-        socket.on('disconnect', function () {
-          console.log('Unconnection <--', socket.id)
-        })
+        socket.on('disconnect')
       })
     })
 }

@@ -43,18 +43,16 @@ const getRandomPerk = (req, res, next) => {
       if (founduser.perks.length < 3) {
         founduser.perks.push(result)
         founduser.save()
-        console.log(result)
         req.perk = result
         next()
       } else {
         result = 'no'
-        console.log('no')
         req.perk = result
         next()
       }
     })
     .catch((err) => {
-      console.log(err)
+      throw err
     })
 }
 
