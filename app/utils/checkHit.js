@@ -125,4 +125,13 @@ function isFinishGame (room) {
   return true
 }
 
-module.exports = { checkHit, isFinishGame }
+function isOut (player) {
+  for (let i = 0; i < player.shipsStatus.length; i++) {
+    if (player.shipsStatus[i] === false) {
+      return false
+    }
+  }
+  return true
+}
+
+module.exports = { checkHit, isFinishGame, isOut }

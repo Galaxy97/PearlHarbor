@@ -60,6 +60,10 @@ const rooms = mongoose.Schema({
   createdAt: {
     type: Date,
     require: true
+  },
+  retiredPlayers: {
+    type: [Number],
+    require: true
   }
 })
 

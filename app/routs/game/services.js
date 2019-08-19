@@ -66,7 +66,8 @@ const createNewRoom = (roomId, player, typeRoom) => {
     players: [player],
     typeOfRoom: typeRoom,
     isClose: false,
-    winnerApiKey: null
+    winnerApiKey: null,
+    retiredPlayers: [-1]
   })
 }
 
