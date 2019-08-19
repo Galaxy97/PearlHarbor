@@ -21,20 +21,6 @@ const login = (req, res, next) => {
       res.status(200).send(user.apiKey)
     })
   })(req, res, next)
-  // User.findOne(
-  //   {
-  //     name: req.body.name,
-  //     password: crypto.createHash('md5', config.hashsecret).update(req.body.password).digest('hex')
-  //   })
-  //   .then((user) => {
-  //     if (user === null) {
-  //       return next(new RequestError(400, 'Wrong name or password'))
-  //     }
-  //     res.status(200).send(user.apiKey)
-  //   })
-  //   .catch((err) => {
-  //     return next(new RequestError(400, err))
-  //   })
 }
 
 const signup = (req, res, next) => {

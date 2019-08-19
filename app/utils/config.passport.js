@@ -4,19 +4,11 @@ const User = require('../routs/user/models/usermodel')
 const config = require('../config/index')
 const crypto = require('crypto')
 
-const userDB = {
-  id: 136345,
-  email: 'test@mail.ru',
-  password: '123'
-}
-
 passport.serializeUser(function (user, done) {
-  console.log('serialize ', user)
   done(null, user.id)
 })
 
 passport.deserializeUser(function (id, done) {
-  console.log('deserialize: ', id)
   User.findOne(
     {
       id: id
