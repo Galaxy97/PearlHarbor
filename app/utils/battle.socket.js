@@ -2,8 +2,8 @@ const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const isOut = require('./checkHit').isOut
 const services = {
-  game: require('./../routs/game/services'),
-  user: require('./../routs/user/services')
+  game: require('./../routes/game/services'),
+  user: require('./../routes/user/services')
 }
 
 module.exports = (io) => {
