@@ -19,7 +19,15 @@ enemy's fleet. Players making shots in arbitrary field. Game finishes after just
 After login/registration player has to chose game room. Connection is made via sockets. Every game with players within is saved
 in database. For saving and retrieving data used mongoose.
 
+<<<<<<< HEAD
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/AndrewDev/app/public/game/img/menu.png)
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/AndrewDev/app/public/game/img/room.png)
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/AndrewDev/app/public/game/img/game.png)
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/AndrewDev/app/public/game/img/battle.png)
+=======
+Screenshots:
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/menu.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/room.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/game.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/battle.png)
+>>>>>>> 397a543e61e7c219358db6a361bccd12311e484d
