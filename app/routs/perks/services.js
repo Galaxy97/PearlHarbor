@@ -52,7 +52,7 @@ const getRandomPerk = (req, res, next) => {
       }
     })
     .catch((err) => {
-      throw err
+      console.error(err)
     })
 }
 

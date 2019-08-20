@@ -27,7 +27,7 @@
       })
         .then(function (response) {
           Cookies.set('apiKey', response.data)
-          location.replace('http://{{host}}:{{port}}/game')
+          location.replace('/game')
         })
         .catch(function (error) {
           alert('sorry pass or login is wrong', error)

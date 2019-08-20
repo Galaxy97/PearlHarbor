@@ -65,7 +65,7 @@ const update = (user, GameResult) => {
   User.update({ apiKey: user.apiKey },
     { $inc: { wins: GameResult, sessions: 1 } })
     .catch((e) => {
-      throw e
+      console.error(e)
     })
 }
 

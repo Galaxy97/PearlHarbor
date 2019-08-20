@@ -1,6 +1,6 @@
 let option
 let userApikey
-const socket = io('http://localhost:3000/battle', {
+const socket = io('/battle', {
   reconnection: false,
 })
 

@@ -30,7 +30,7 @@ const updateRoom = (roomId, player, close) => {
     },
     { multi: false }, function (err) {
       if (err) {
-        throw err
+        console.error(err)
       }
     })
 }
@@ -50,7 +50,7 @@ const updateSocketId = (roomId, newSocketId, player) => { // player1 = true ; pl
     update,
     { multi: false }, function (err) {
       if (err) {
-        throw err
+        console.error(err)
       }
     })
 }
