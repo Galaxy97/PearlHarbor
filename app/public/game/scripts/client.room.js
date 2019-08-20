@@ -1,7 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search)
 const typeRoom = urlParams.get('type')
 
-const socket = io('http://localhost:3000/room', {
+const socket = io('/room', {
   reconnection: false,
 })
 socket.emit('authentication', {
