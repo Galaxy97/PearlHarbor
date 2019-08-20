@@ -26,7 +26,7 @@ module.exports = (io) => {
             socket.emit('whoTurn', turn)
           })
           .catch((e) => {
-            throw e
+            console.error(e)
           })
       })
       socket.on('shot', (data) => {
@@ -92,11 +92,11 @@ module.exports = (io) => {
                   }
                 })
             } else {
-              console.log('err')
+              console.error('error')
             }
           })
           .catch((e) => {
-            throw e
+            console.error(e)
           })
         socket.on('disconnect', function () {
         })

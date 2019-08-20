@@ -37,10 +37,10 @@
       })
         .then(function (response) {
           document.cookie = "apiKey=" + response.data
-          location.replace('http://{{host}}:{{port}}/login')
+          location.href = '/login'
         })
         .catch(function (error) {
-          throw e
+          console.error(e)
         })
     }
   </script>

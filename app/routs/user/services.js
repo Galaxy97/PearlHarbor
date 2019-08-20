@@ -4,23 +4,22 @@ const crypto = require('crypto')
 const uuidv4 = require('uuid/v4')
 const config = require('../../config/index')
 const cookie = require('cookie')
-const passport = require('passport')
 
 const login = (req, res, next) => {
-  passport.authenticate('local', function (err, user) {
-    if (err) {
-      return next(new RequestError(400, err))
-    }
-    if (!user) {
-      return next(new RequestError(400, 'Wrong name or password'))
-    }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(new RequestError(400, err))
+  User.findOne(
+    {
+      name: req.body.name,
+      password: crypto.createHash('md5', config.hashsecret).update(req.body.password).digest('hex')
+    })
+    .then((user) => {
+      if (user === null) {
+        return next(new RequestError(400, 'Wrong name or password'))
       }
       res.status(200).send(user.apiKey)
     })
-  })(req, res, next)
+    .catch((err) => {
+      return next(new RequestError(400, err))
+    })
 }
 
 const signup = (req, res, next) => {
@@ -65,7 +64,7 @@ const update = (user, GameResult) => {
   User.update({ apiKey: user.apiKey },
     { $inc: { wins: GameResult, sessions: 1 } })
     .catch((e) => {
-      throw e
+      console.error(e)
     })
 }
 

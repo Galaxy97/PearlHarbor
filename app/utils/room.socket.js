@@ -67,7 +67,7 @@ module.exports = (io) => {
                       socket.emit('allPlayersInfo', data)
                     })
                     .catch((e) => {
-                      throw e
+                      console.error(e)
                     })
                   if (close) {
                     io.of('/room').to(roomData.roomId).emit('letsBattle')
@@ -75,11 +75,11 @@ module.exports = (io) => {
                 }
               })
               .catch((e) => {
-                throw e
+                console.error(e)
               })
           })
           .catch((e) => {
-            throw e
+            console.error(e)
           })
       })
       socket.on('disconnect', function () {
