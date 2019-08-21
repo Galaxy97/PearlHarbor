@@ -46,7 +46,7 @@ const checkHit = (x, y, player1, player2, option) => {
     }
   }
   if (option === 'rightDiagonal') {
-    for (let i = 9, j = 0; j < 10 && i > 0; i--, j++) {
+    for (let i = 9, j = 0; j < 10 || i > 0; i--, j++) {
       checkHit(i, j, player1, player2)
     }
   }
@@ -134,4 +134,6 @@ function isOut (player) {
   return true
 }
 
-module.exports = { checkHit, isFinishGame, isOut }
+const testObj = { isOut, isFinishGame, coverArea, isSank, findShipIndex, checkHit }
+
+module.exports = { checkHit, isFinishGame, isOut, testObj }

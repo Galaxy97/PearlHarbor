@@ -1,0 +1,20 @@
+version: '3'
+services:
+  mongo:
+    container_name: mongodb
+    volumes:
+      - mongo-data:/data/db
+    image: mongo:latest
+    ports:
+      - 27017:27017
+  app:
+    container_name: seabattle
+    image: seabattle:latest
+    depends_on:
+        - mongo
+    restart: on-failure
+    ports:
+      - 3000:3000
+volumes:
+  mongo-data:
+
