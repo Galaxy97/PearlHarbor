@@ -24,4 +24,7 @@ Screenshots:
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/room.png)
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/game.png)
 ![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/battle.png)
+PAY TO WIN !!!!!!!
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/payRoom.png)
+![alt text](https://github.com/Galaxy97/PearlHarbor/blob/master/app/public/game/img/paysucces.png)
 
