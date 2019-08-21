@@ -22,7 +22,7 @@ const getRandomInt = (max) => {
   return Math.floor(Math.random() * Math.floor(max))
 }
 
-const getRandomPerk = (req, res, next) => {
+const getRandomPerk = (req, res) => {
   let result
   const value = getRandomInt(48)
   if (value === 0) {
@@ -40,20 +40,25 @@ const getRandomPerk = (req, res, next) => {
   }
   User.findOne({ apiKey: cookie.parse(req.headers.cookie).apiKey })
     .then((founduser) => {
-      if (founduser.perks.length < 3) {
-        founduser.perks.push(result)
-        founduser.save()
-        req.perk = result
-        next()
-      } else {
-        result = 'no'
-        req.perk = result
-        next()
-      }
+      founduser.perks.push(result)
+      founduser.save()
+      res.render('perks/successfullPay', {
+        perk: result
+      })
     })
     .catch((err) => {
       console.error(err)
     })
 }
 
-module.exports = { authenticate, getRandomPerk }
+const getUserPerks = (req, res) => {
+  User.findOne({ apiKey: cookie.parse(req.headers.cookie).apiKey })
+    .then((user) => {
+      res.json(user.perks)
+    })
+    .catch((err) => {
+      console.error(err)
+    })
+}
+
+module.exports = { authenticate, getRandomPerk, getUserPerks }

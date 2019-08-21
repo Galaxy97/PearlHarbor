@@ -45,46 +45,18 @@
         <div id="userPerks"></div>
       </div>
       <div>
-        <h3>Get random box</h3>
-        <form action="/perks/pay" method="POST">
-          <script
-            src = 'https://checkout.stripe.com/checkout.js'
-            class = 'stripe-button'
-            data-key = 'pk_test_EJU8ts0eGiQk4V441PX0baVz005xegsGYX'
-            data-amount = '99'
-            data-name = 'super weapon'
-            data-description = 'ewraasdasda'
-            data-locale = 'auto'
-            data-currency = 'usd'
-          >
-          </script>
-        </form>
+        <h3>You paid perk</h3>
+          <p>You have got <strong>{{perk}}</strong></p>
+          <img src="/perk/img/{{perk}}.png" height="250px" width="250px" alt="sorry file is not found">
       </div>
     </div>
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
 <script>
-
-  function sendGet() {
-    axios.get('perks/getperk', {
-    })
-      .then(function (response) {
-        if (response.data !== 'no') {
-          alert('you have got ' + response.data)
-        } else {
-          alert('you have got 3 perks already')
-        }
-      })
-      .catch(function (error) {
-        alert(':c  ' + error)
-      })
-  }
-
   function getUserPerks() {
-    axios.get('perks/getuserperks', {
+    axios.get('/perks/getuserperks', {
     })
       .then(function (response) {
         const ul = document.createElement('ul')
