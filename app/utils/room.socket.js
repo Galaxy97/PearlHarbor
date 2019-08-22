@@ -33,42 +33,47 @@ module.exports = (io) => {
                   socket.emit('message', room)
                 } else {
                   // else room is exist and free
-                  const player = services.game.createNewPlayer(socket.id, authData.apiKey, userInfo.perks) // create field player
-                  const room = { // info about user
-                    id: roomData.roomId,
-                    turn: 0,
-                    playerInfo: {
-                      name: userInfo.name,
-                      sessions: userInfo.sessions,
-                      wins: userInfo.wins,
-                      lastPlayDate: userInfo.updatedAt
-                    }
-                  }
-                  let close = false
-                  if (roomData.players.length === roomData.typeOfRoom - 1) {
-                    close = true
-                  }
-                  socket.join(roomData.roomId)
-                  services.game.updateRoom(roomData.roomId, player, close) // if close true room is closed
-                  socket.emit('message', room)
-                  const allPlayersInfo = []
-                  roomData.players.forEach(element => {
-                    allPlayersInfo.push(services.game.getPlayerInfo(element.apiKey))
-                  })
-                  Promise.all(allPlayersInfo)
-                    .then((data) => {
-                      data.push(room.playerInfo)
-                      roomData.players.forEach(element => {
-                        socket.broadcast.to(element.socketId).emit('allPlayersInfo', data)
-                      })
-                      socket.emit('allPlayersInfo', data)
+                  services.game.isPlayerPresent(roomData, authData.apiKey)
+                    .then((foundUser) => {
+                      if (!foundUser) {
+                        const player = services.game.createNewPlayer(socket.id, authData.apiKey, userInfo.perks) // create field player
+                        const room = { // info about user
+                          id: roomData.roomId,
+                          turn: 0,
+                          playerInfo: {
+                            name: userInfo.name,
+                            sessions: userInfo.sessions,
+                            wins: userInfo.wins,
+                            lastPlayDate: userInfo.updatedAt
+                          }
+                        }
+                        let close = false
+                        if (roomData.players.length === roomData.typeOfRoom - 1) {
+                          close = true
+                        }
+                        socket.join(roomData.roomId)
+                        services.game.updateRoom(roomData.roomId, player, close) // if close true room is closed
+                        socket.emit('message', room)
+                        const allPlayersInfo = []
+                        roomData.players.forEach(element => {
+                          allPlayersInfo.push(services.game.getPlayerInfo(element.apiKey))
+                        })
+                        Promise.all(allPlayersInfo)
+                          .then((data) => {
+                            data.push(room.playerInfo)
+                            roomData.players.forEach(element => {
+                              socket.broadcast.to(element.socketId).emit('allPlayersInfo', data)
+                            })
+                            socket.emit('allPlayersInfo', data)
+                          })
+                          .catch((e) => {
+                            console.error(e)
+                          })
+                        if (close) {
+                          io.of('/room').to(roomData.roomId).emit('letsBattle')
+                        }
+                      }
                     })
-                    .catch((e) => {
-                      console.error(e)
-                    })
-                  if (close) {
-                    io.of('/room').to(roomData.roomId).emit('letsBattle')
-                  }
                 }
               })
               .catch((e) => {
