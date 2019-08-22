@@ -19,8 +19,8 @@
     "ignore": [
       "/app/public"
     ],
-    "env": [ 
-      "jest" 
+    "env": [
+      "jest"
     ]
   },
   "homepage": "https://github.com/Galaxy97/PearlHarbor#readme",

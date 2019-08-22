@@ -103,7 +103,7 @@ const checkTurn = (room, socket, turn) => {
 }
 
 const isPlayerPresent = (room, apiKey) => {
-  room.players.findOne({ apiKey: apiKey })
+  return room.players.find(o => o.apiKey === apiKey)
 }
 
 module.exports = {
