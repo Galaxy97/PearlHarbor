@@ -1,9 +1,11 @@
 const RequestError = require('../../errors/RequestError')
 const User = require('./models/usermodel')
+const Rooms = require('../game/models/roomsmodel').Rooms
 const crypto = require('crypto')
 const uuidv4 = require('uuid/v4')
 const config = require('../../config/index')
 const cookie = require('cookie')
+const getUser = require('../game/services').getPlayerInfo
 
 const login = (req, res, next) => {
   User.findOne(
@@ -68,9 +70,36 @@ const update = (user, GameResult) => {
     })
 }
 
+const getHistrory = (index, userApiKey, res) => {
+  const result = []
+  Rooms.find({ $and: [{ players: { $elemMatch: { apiKey: userApiKey } } }, { winnerApiKey: { $ne: null } }] })
+    .then((rooms) => {
+      let i = index
+      rooms.forEach(room => {
+        getUser(room.winnerApiKey)
+          .then((user) => {
+            result.push({
+              winner: user.name,
+              matrix: room.players.find(p => p.apiKey === userApiKey).matrix,
+              createdAt: room.createdAt,
+              roomId: room.roomId
+            })
+            i++
+            if (i === index + 5 || i === rooms.length) {
+              res.render('user/history', { data: result })
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      })
+    })
+}
+
 module.exports = {
   loginFunc: login,
   signupFunc: signup,
   authenticate: authenticate,
-  updateBase: update
+  updateBase: update,
+  getHistrory: getHistrory
 }

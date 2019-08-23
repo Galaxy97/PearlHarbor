@@ -9,7 +9,7 @@ const checkHit = (x, y, player1, player2, option) => {
       // check if ship have sank
       if (isSank(player2, shipIndex)) {
         // if it is we're covering area around it with 1's, that means the area is hit
-        coverArea(player2.ships[shipIndex], player2.enemyField)
+        coverArea(player2.ships[shipIndex], player2.enemyField, player2.matrix)
         return true
       }
       return true
@@ -88,7 +88,7 @@ function isSank (player, index) {
   return true
 }
 
-function coverArea (ship, enemyField) {
+function coverArea (ship, enemyField, matrix) {
   // to cover area around ship we need to set value 1 in cells that are around the ship
   // also we need to check if that area not goes beyond bounds of matrix
   let itX = ship[0][0] === 0 ? 0 : ship[0][0] - 1
@@ -100,6 +100,7 @@ function coverArea (ship, enemyField) {
     for (let j = itY; j < YLast; j++) {
       if (enemyField[itX][j] !== 2) {
         enemyField[itX][j] = 1
+        matrix[itX][j] = 1
       }
     }
   }

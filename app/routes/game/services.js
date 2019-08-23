@@ -102,6 +102,10 @@ const checkTurn = (room, socket, turn) => {
   }
 }
 
+const isPlayerPresent = (room, apiKey) => {
+  return room.players.find(o => o.apiKey === apiKey)
+}
+
 module.exports = {
   authenticate,
   updateRoom,
@@ -111,5 +115,6 @@ module.exports = {
   getPlayerInfo,
   getRoom,
   updateSocketId,
-  checkTurn
+  checkTurn,
+  isPlayerPresent
 }

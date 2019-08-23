@@ -63,7 +63,70 @@
     .info span {
       font-weight: 700;
     }
+
+    .btnEmpty {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/empty.jpg) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnChunkShip {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/chunkShip.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnLosser {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/losser.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnKill {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/kill.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
   </style>
+
+  <script>
+    function renderField(table, arr) {
+      debugger
+      for (let i = 0; i < 10; i++) {
+        const tr = document.createElement('tr')
+        for (let j = 0; j < 10; j++) {
+          const td = document.createElement('td')
+          let classbtn
+
+          if (arr[i][j] === 0) {
+            classbtn = 'btnEmpty'
+          }
+          if (arr[i][j] === 1) {
+            classbtn = 'btnLosser'
+          }
+          if (arr[i][j] === 2) {
+            classbtn = 'btnChunkShip'
+          }
+          if (arr[i][j] === 3) {
+            classbtn = 'btnKill'
+          }
+
+          td.innerHTML = `<div type="button" class="${classbtn}"></div>`
+
+          tr.appendChild(td)
+        }
+        table.appendChild(tr)
+      }
+    }
+  </script>
 </head>
 
 <body>
@@ -72,52 +135,27 @@
       <h1>History</h1>
     </header>
     <div class="content">
-      {{# each data}}
-      <div class="unit" id="{{this.name}}" onclick="alert('{{this.name}}9')">
+      {{#each data}}
+      <div class="unit" id="{{this.roomId}}" onclick="alert('{{this.winner}}9')">
         <div class="matrix">
-          <table></table>
+          <table id="{{this.roomId}}-table"></table>
           <script>
-            for (let y = 0; y < 10; y++) {
-              const tr = document.createElement('tr')
-              for (let x = 0; x < 10; x++) {
-                const td = document.createElement('td')
-                const btn = document.createElement('div')
-                btn.innerText = '0'
-                td.appendChild(btn)
-                tr.appendChild(td)
-              }
-              document.getElementById('{{this.name}}').children[0].children[0].appendChild(tr)
-            }
+            debugger
+            renderField(document.getElementById('{{this.roomId}}-table'), [{{ this.matrix }}])
           </script>
         </div>
         <div class="info">
           <p class="text">
-            User win:<span> {{this.name}}</span>
+            User win:<span> {{this.winner}}</span>
           </p>
           <p class="text">
-            Game date: <span>{{this.date}}</span>
+            Game date: <span></span>
           </p>
         </div>
       </div>
       {{/each}}
     </div>
   </div>
-
-  <script>
-    function renderMatrix() {
-      for (let y = 0; y < 10; y++) {
-        const tr = document.createElement('tr')
-        for (let x = 0; x < 10; x++) {
-          const td = document.createElement('td')
-          const btn = document.createElement('div')
-          btn.innerText = '0'
-          td.appendChild(btn)
-          tr.appendChild(td)
-        }
-        document.getElementById('aaa').appendChild(tr)
-      }
-    }
-  </script>
 </body>
 
 </html>

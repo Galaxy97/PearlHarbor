@@ -33,7 +33,6 @@ module.exports = (io) => {
                   socket.emit('message', room)
                 } else {
                   // else room is exist and free
-                  const player = services.game.createNewPlayer(socket.id, authData.apiKey, userInfo.perks) // create field player
                   const room = { // info about user
                     id: roomData.roomId,
                     turn: 0,
@@ -45,29 +44,43 @@ module.exports = (io) => {
                     }
                   }
                   let close = false
-                  if (roomData.players.length === roomData.typeOfRoom - 1) {
-                    close = true
-                  }
-                  socket.join(roomData.roomId)
-                  services.game.updateRoom(roomData.roomId, player, close) // if close true room is closed
-                  socket.emit('message', room)
-                  const allPlayersInfo = []
-                  roomData.players.forEach(element => {
-                    allPlayersInfo.push(services.game.getPlayerInfo(element.apiKey))
-                  })
-                  Promise.all(allPlayersInfo)
-                    .then((data) => {
-                      data.push(room.playerInfo)
-                      roomData.players.forEach(element => {
-                        socket.broadcast.to(element.socketId).emit('allPlayersInfo', data)
+                  const user = services.game.isPlayerPresent(roomData, authData.apiKey)
+                  const index = roomData.players.indexOf(user)
+                  if (user === undefined) {
+                    if (roomData.players.length === roomData.typeOfRoom - 1) {
+                      close = true
+                    }
+                    const player = services.game.createNewPlayer(socket.id, authData.apiKey, userInfo.perks) // create field player
+                    roomData.players.push(player) // if close true room is closed
+                    roomData.isClose = close
+                    roomData.markModified('players')
+                    roomData.save()
+                    socket.join(roomData.roomId)
+                    socket.emit('message', room)
+                    const allPlayersInfo = []
+                    roomData.players.forEach(element => {
+                      allPlayersInfo.push(services.game.getPlayerInfo(element.apiKey))
+                    })
+                    Promise.all(allPlayersInfo)
+                      .then((data) => {
+                        data.push(room.playerInfo)
+                        roomData.players.forEach(element => {
+                          socket.broadcast.to(element.socketId).emit('allPlayersInfo', data)
+                        })
+                        socket.emit('allPlayersInfo', data)
                       })
-                      socket.emit('allPlayersInfo', data)
-                    })
-                    .catch((e) => {
-                      console.error(e)
-                    })
-                  if (close) {
-                    io.of('/room').to(roomData.roomId).emit('letsBattle')
+                      .catch((e) => {
+                        console.error(e)
+                      })
+                    if (close) {
+                      io.of('/room').to(roomData.roomId).emit('letsBattle')
+                    }
+                  } else {
+                    roomData.players[index].socketId = socket.id
+                    roomData.markModified(`players`)
+                    roomData.save()
+                    socket.join(roomData.roomId)
+                    socket.emit('message', room)
                   }
                 }
               })
