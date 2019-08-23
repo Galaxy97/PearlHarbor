@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>History</title>
+  <style>
+    .container {
+      width: 80vw;
+      border: solid red;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      font-size: 7em;
+      text-align: center;
+      margin: 0.25em 0 0 0;
+    }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .unit {
+      flex: 1;
+      margin: 1em;
+      padding: 1em;
+      border: 1px solid black;
+      min-width: 450px;
+      max-width: 500px;
+    }
+
+    .matrix {
+      width: 100%;
+      margin: auto;
+    }
+
+    .matrix table {
+      width: 100%;
+    }
+
+    .matrix div {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/empty.jpg) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info p {
+      text-align: center;
+    }
+
+    .info span {
+      font-weight: 700;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>History</h1>
+    </header>
+    <div class="content">
+      {{# each data}}
+      <div class="unit" id="{{this.name}}" onclick="alert('{{this.name}}9')">
+        <div class="matrix">
+          <table></table>
+          <script>
+            for (let y = 0; y < 10; y++) {
+              const tr = document.createElement('tr')
+              for (let x = 0; x < 10; x++) {
+                const td = document.createElement('td')
+                const btn = document.createElement('div')
+                btn.innerText = '0'
+                td.appendChild(btn)
+                tr.appendChild(td)
+              }
+              document.getElementById('{{this.name}}').children[0].children[0].appendChild(tr)
+            }
+          </script>
+        </div>
+        <div class="info">
+          <p class="text">
+            User win:<span> {{this.name}}</span>
+          </p>
+          <p class="text">
+            Game date: <span>{{this.date}}</span>
+          </p>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <script>
+    function renderMatrix() {
+      for (let y = 0; y < 10; y++) {
+        const tr = document.createElement('tr')
+        for (let x = 0; x < 10; x++) {
+          const td = document.createElement('td')
+          const btn = document.createElement('div')
+          btn.innerText = '0'
+          td.appendChild(btn)
+          tr.appendChild(td)
+        }
+        document.getElementById('aaa').appendChild(tr)
+      }
+    }
+  </script>
+</body>
+
+</html>

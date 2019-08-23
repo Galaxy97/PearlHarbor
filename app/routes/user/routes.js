@@ -21,6 +21,22 @@ router.get('/room', services.authenticate, (req, res, next) => {
   res.render('game/waitingRoom')
 })
 
+router.get('/history', services.authenticate, (req, res, next) => {
+  res.render('user/history', {
+    data:
+      [
+        {
+          name: 'qwe',
+          date: '324qwe'
+        },
+        {
+          name: 'rty',
+          date: '566qwe'
+        }
+      ]
+  })
+})
+
 router.post('/signup', validatorBody(userValidatorSchema.signup), (req, res, next) => {
   services.signupFunc(req, res, next)
 })
