@@ -2,20 +2,19 @@ const express = require('express')
 const validatorBody = require('../../web-validator/validate-middleware-body')
 const userValidatorSchema = require('./validator')
 const services = require('./services')
-const config = require('../../config/index')
 
 const router = express.Router()
 
 router.get('/signup', (req, res, next) => {
-  res.render('user/signup', { host: config.host, port: config.port })
+  res.render('user/signup')
 })
 
 router.get('/login', (req, res, next) => {
-  res.render('user/login', { host: config.host, port: config.port })
+  res.render('user/login')
 })
 
 router.get('/', services.authenticate, (req, res, next) => {
-  res.render('user/index', { path: { two: '/game/twoPlayers', three: '/game/threePlayers' } })
+  res.render('user/index')
 })
 
 router.get('/room', services.authenticate, (req, res, next) => {
