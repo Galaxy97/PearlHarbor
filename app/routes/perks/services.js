@@ -24,7 +24,7 @@ const getRandomInt = (max) => {
 
 const getRandomPerk = (req, res) => {
   let result
-  const value = getRandomInt(48)
+  const value = getRandomInt(47)
   if (value === 0) {
     result = 'boundsStrike100'
   } else if (value < 4) {

@@ -1,6 +1,7 @@
 const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const isOut = require('./checkHit').isOut
+const Users = require('../routes/user/models/usermodel')
 const services = {
   game: require('./../routes/game/services'),
   user: require('./../routes/user/services')
@@ -19,6 +20,9 @@ module.exports = (io) => {
             socket.join(roomId)
             roomData.markModified(`players`)
             roomData.save()
+              .catch((err) => {
+                console.error(err)
+              })
             socket.emit('userField', player)
             socket.emit('renderEnemyFields', roomData.players, player.apiKey)
             let turn
@@ -50,6 +54,7 @@ module.exports = (io) => {
                   }
                 } while (room.retiredPlayers.includes(room.indexOfCurrentPlayer))
               }
+              let isFinish = false
               if (isOut(room.players[player2])) {
                 room.retiredPlayers.push(player2)
                 if (isFinishGame(room)) {
@@ -60,7 +65,7 @@ module.exports = (io) => {
                       services.user.updateBase(room.players[i], 0)
                     }
                   }
-                  io.of('/battle').to(data.roomId).emit('gameOver', room.winnerApiKey)
+                  isFinish = true
                 }
               }
               room.markModified(`players`)
@@ -88,6 +93,14 @@ module.exports = (io) => {
                         room.indexOfCurrentPlayer === i ? turn = true : turn = false
                         socket.broadcast.to(room.players[i].socketId).emit('whoTurn', turn)
                       }
+                    }
+                  }
+                  if (isFinish) {
+                    if (room.players[player1].apiKey === room.winnerApiKey) {
+                      Users.findOne({ apiKey: room.winnerApiKey })
+                        .then((winner) => {
+                          io.of('/battle').to(data.roomId).emit('gameOver', winner.name + ' won!')
+                        })
                     }
                   }
                 })
