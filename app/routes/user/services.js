@@ -85,7 +85,7 @@ const getHistrory = (index, userApiKey, res) => {
               roomId: room.roomId
             })
             i++
-            if (i === index + 5 || i === rooms.length) {
+            if (i === (index + 5) || i === rooms.length) {
               res.render('user/history', { data: result })
             }
           })
