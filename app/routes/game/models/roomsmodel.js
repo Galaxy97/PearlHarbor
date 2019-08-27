@@ -69,6 +69,8 @@ const rooms = mongoose.Schema({
     type: [Number],
     require: true
   }
+}, {
+  timestamps: { createdAt: 'createdAt' }
 })
 
 const Player = mongoose.model('Player', player)

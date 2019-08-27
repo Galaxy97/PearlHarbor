@@ -82,7 +82,7 @@ const getHistrory = (userApiKey, res, index) => {
           roomId: room.roomId
         })
       })
-      return result
+      res.render('user/history', { data: result })
     })
 }
 

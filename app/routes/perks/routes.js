@@ -16,23 +16,19 @@ router.get('/getperk', services.authenticate, (req, res) => {
 })
 
 router.post('/pay', (req, res) => {
-  stripe.customers.create({
-    email: req.body.stripeEmail, // customer email
-    source: req.body.stripeToken // token for the card
-  })
-    .then(customer =>
-      stripe.charges.create({ // charge the customer
-        amount: '99',
-        description: 'Sample Charge',
-        currency: 'usd',
-        customer: customer.id
-      }))
-    .then(charge => {
-      services.getRandomPerk(req, res)
-    })
-    .catch((e) => {
+  console.log(req.body.email, req.body.payMethod)
+  stripe.charges.create({
+    amount: 99,
+    currency: 'usd',
+    source: req.body.payMethod, // obtained with Stripe.js
+    description: 'some description'
+  }, function (e, charge) {
+    if (e) {
       console.log(e)
-    })
+      res.status(400).send({ message: e })
+    }
+    res.send({ message: 'successful' })
+  })
 })
 
 module.exports = router

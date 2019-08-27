@@ -8,8 +8,12 @@
   <title>Pearl Harbor</title>
 </head>
 <style>
+  h3 {
+    text-align: center;
+  }
+
   body {
-    background: url(/game/img/goldMine.jpg);
+    background: url(/game/img/goldMine.jpg) no-repeat;
     background-size: cover;
   }
 
@@ -24,12 +28,53 @@
     font-size: 40px;
     padding: .5em;
     background: rgba(241, 219, 153, 0.5);
-    text-align: center;
   }
 
   .container {
     margin: 0 auto;
     width: 70%;
+  }
+
+  form {
+    border: 1px solid red;
+    min-width: 20vw;
+    min-height: 30vh;
+    padding: 0.5em;
+  }
+
+  .payData {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+  }
+
+  .unit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  input,
+  select {
+    padding: 0;
+    height: 2em;
+    width: 20em;
+    font-size: 26px;
+  }
+
+  .submit {
+    display: flex;
+    padding: 1em;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .submit input {
+    border-radius: 7%;
+    font-size: 1em;
+    background: url(https://developer.apple.com/design/human-interface-guidelines/apple-pay/images/ApplePay-Button.png) no-repeat;
+    height: 38px;
+    width: 212px;
   }
 </style>
 
@@ -46,26 +91,37 @@
       </div>
       <div>
         <h3>Get random box</h3>
-        <form action="/perks/pay" method="POST">
-          <script
-            src = 'https://checkout.stripe.com/checkout.js'
-            class = 'stripe-button'
-            data-key = 'pk_test_EJU8ts0eGiQk4V441PX0baVz005xegsGYX'
-            data-amount = '99'
-            data-name = 'super perk'
-            data-description = 'You can buy super perk'
-            data-locale = 'auto'
-            data-currency = 'usd'
-          >
-          </script>
-        </form>
+        <div class="form">
+          <div class="payData">
+            <div class="unit">
+              <span>Email</span> <input type="email" value="default@test.com">
+            </div>
+            <div class="unit">
+              <span>Payment Methods</span>
+              <select>
+                <option value="tok_visa">visa</option>
+                <option value="tok_mastercard">mastercard</option>
+                <option value="tok_amex">amex</option>
+                <option value="tok_discover">discover</option>
+                <option value="tok_diners">diners</option>
+                <option value="tok_jcb">jcb</option>
+                <option value="tok_unionpay">unionpay</option>
+              </select>
+            </div>
+            <div class="unit">
+              Amount <span> 0.99$ </span>
+            </div>
+            <div class="submit">
+              <input type="submit" onclick="pay()" value="">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://js.stripe.com/v3/"></script>
 <script>
 
   function sendGet() {
@@ -81,6 +137,23 @@
       .catch(function (error) {
         alert(':c  ' + error)
       })
+  }
+
+  function pay() {
+    const unit = document.getElementsByClassName('unit')
+    const email = unit[0].children[1].value
+    const payMethod = unit[1].children[1].value
+    axios.post('perks/pay', {
+      email, payMethod
+    })
+      .then(function (response) {
+        alert('successfull pay get Yuor perk')
+       location.pathname = '/perks/getperk'
+      })
+      .catch(function (error) {
+        alert(':c  ' + error)
+      })
+
   }
 
   function getUserPerks() {

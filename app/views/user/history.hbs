@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>History</title>
+  <style>
+    body {
+      background: url(https://images3.alphacoders.com/109/thumb-1920-109609.jpg) no-repeat;
+      background-size: cover;
+    }
+
+    .container {
+      width: 80vw;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      font-size: 7em;
+      text-align: center;
+      margin: 0.25em 0 0 0;
+    }
+
+    .content {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .unit {
+      flex: 1;
+      margin: 1em;
+      padding: 1em;
+      border: 5px solid black;
+      background: rgba(37, 30, 62, 0.32);
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+      min-width: 450px;
+      max-width: 500px;
+    }
+
+    .matrix {
+      width: 100%;
+      margin: auto;
+    }
+
+    .matrix table {
+      width: 100%;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info p {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 2em;
+    }
+
+    .info span {
+      font-weight: 700;
+    }
+
+    .btnEmpty {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/empty.jpg) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnChunkShip {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/chunkShip.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnLosser {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/losser.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btnKill {
+      width: 40px;
+      height: 40px;
+      background: url(/game/img/kill.png) no-repeat;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
+
+  <script>
+    function renderField(table, arr) {
+      let newArr = []
+      for (let i = 0; i < 10; i++) {
+        newArr[i] = []
+      }
+      let index = 0
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          newArr[i][j] = arr[index++]
+        }
+      }
+      arr = newArr
+      for (let i = 0; i < 10; i++) {
+        const tr = document.createElement('tr')
+        for (let j = 0; j < 10; j++) {
+          const td = document.createElement('td')
+          let classbtn
+
+          if (arr[i][j] === 0) {
+            classbtn = 'btnEmpty'
+          }
+          if (arr[i][j] === 1) {
+            classbtn = 'btnLosser'
+          }
+          if (arr[i][j] === 2) {
+            classbtn = 'btnChunkShip'
+          }
+          if (arr[i][j] === 3) {
+            classbtn = 'btnKill'
+          }
+
+          td.innerHTML = `<div type="button" class="${classbtn}"></div>`
+
+          tr.appendChild(td)
+        }
+        table.appendChild(tr)
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>History</h1>
+    </header>
+    <div class="content">
+      {{#each data}}
+      <div class="unit" id="{{this.roomId}}" onclick="alert('{{this.winner}}')">
+        <div class="matrix">
+          <table id="{{this.roomId}}-table"></table>
+          <script>
+            renderField(document.getElementById('{{this.roomId}}-table'), [{{ this.matrix }}])
+          </script>
+        </div>
+        <div class="info">
+          <p class="text">
+            User win:<span> {{this.winner}}</span>
+          </p>
+          <p class="text">
+            Game date: <span></span>
+          </p>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</body>
+
+</html>
