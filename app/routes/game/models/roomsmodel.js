@@ -57,6 +57,10 @@ const rooms = mongoose.Schema({
     type: String,
     require: false
   },
+  winnerName: {
+    type: String,
+    require: false
+  },
   createdAt: {
     type: Date,
     require: true

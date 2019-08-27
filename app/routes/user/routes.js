@@ -32,7 +32,7 @@ router.post('/login', validatorBody(userValidatorSchema.login), (req, res, next)
 })
 
 router.get('/getshorthistory', services.authenticate, (req, res, next) => {
-  services.getHistrory(0, cookie.parse(req.headers.cookie).apiKey, res)
+  res.status(200).send(services.getHistrory(cookie.parse(req.headers.cookie).apiKey, res, 0))
 })
 
 router.get('gethistory', services.authenticate, (req, res, next) => {
