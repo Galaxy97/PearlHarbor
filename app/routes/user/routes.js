@@ -2,7 +2,6 @@ const express = require('express')
 const validatorBody = require('../../web-validator/validate-middleware-body')
 const userValidatorSchema = require('./validator')
 const services = require('./services')
-const config = require('../../config/index')
 const cookie = require('cookie')
 
 const router = express.Router()
