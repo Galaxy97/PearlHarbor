@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+require('events').EventEmitter.defaultMaxListeners = 25
 
 mongoose.connect('mongodb+srv://Admin:simplepass111@cluster0-ogczo.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true })
 // mongoose.connect('mongodb://localhost:27017/data', { useNewUrlParser: true })
@@ -8,6 +9,9 @@ db.on('error', () => {
 })
 db.once('open', function () {
   console.log('we\'re connected!')
+})
+db.on('close', () => {
+  db.removeAllListeners()
 })
 
 module.exports = db

@@ -2,6 +2,7 @@ const checkHit = require('./checkHit').checkHit
 const isFinishGame = require('./checkHit').isFinishGame
 const isOut = require('./checkHit').isOut
 const Users = require('../routes/user/models/usermodel')
+const Rooms = require('../routes/game/models/roomsmodel').Rooms
 const services = {
   game: require('./../routes/game/services'),
   user: require('./../routes/user/services')
@@ -55,19 +56,28 @@ module.exports = (io) => {
                 } while (room.retiredPlayers.includes(room.indexOfCurrentPlayer))
               }
               let isFinish = false
+              let name = null
               if (isOut(room.players[player2])) {
                 room.retiredPlayers.push(player2)
                 if (isFinishGame(room)) {
-                  for (let i = 0; i < room.players.length; i++) {
-                    if (room.winnerApiKey === room.players[i].apiKey) {
-                      services.user.updateBase(room.players[i], 1)
-                    } else {
-                      services.user.updateBase(room.players[i], 0)
-                    }
-                  }
-                  isFinish = true
+                  Users.findOne({ apiKey: room.winnerApiKey })
+                    .then((user) => {
+                      name = user.name
+                      for (let i = 0; i < room.players.length; i++) {
+                        if (room.winnerApiKey === room.players[i].apiKey) {
+                          services.user.updateBase(room.players[i], 1)
+                        } else {
+                          services.user.updateBase(room.players[i], 0)
+                        }
+                      }
+                      isFinish = true
+                    })
+                    .catch((err) => {
+                      console.log(err)
+                    })
                 }
               }
+              room.winnerName = name
               room.markModified(`players`)
               room.save()
                 .then(() => {
@@ -99,7 +109,10 @@ module.exports = (io) => {
                     if (room.players[player1].apiKey === room.winnerApiKey) {
                       Users.findOne({ apiKey: room.winnerApiKey })
                         .then((winner) => {
-                          io.of('/battle').to(data.roomId).emit('gameOver', winner.name + ' won!')
+                          room.update({ winnerName: winner.name })
+                            .then(() => {
+                              io.of('/battle').to(data.roomId).emit('gameOver', winner.name + ' won!')
+                            })
                         })
                     }
                   }
